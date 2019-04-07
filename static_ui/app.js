@@ -5,7 +5,8 @@ window.app = new Vue({
   <v-app>
 
     <v-navigation-drawer v-model="drawer" fixed app>
-      <v-list>
+    <v-img src="./icons/icon-512x512.png"></v-img>
+    <v-list>
         <v-subheader>Repositories</v-subheader>
         <v-list-tile avatar ripple>
           <v-list-tile-avatar><v-icon>dashboard</v-icon></v-list-tile-avatar>
