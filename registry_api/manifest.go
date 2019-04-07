@@ -3,51 +3,22 @@ package api
 import (
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/docker/distribution"
 
+	manifestlist "github.com/docker/distribution/manifest/manifestlist"
+	manifest "github.com/docker/distribution/manifest/schema2"
 	ref "github.com/docker/distribution/reference"
 	client "github.com/docker/distribution/registry/client"
-	"github.com/docker/distribution/registry/client/auth"
-	"github.com/docker/distribution/registry/client/auth/challenge"
-	"github.com/docker/distribution/registry/client/transport"
 	"github.com/gorilla/mux"
 	digest "github.com/opencontainers/go-digest"
 )
 
-func makeHubTransport(server, image string) http.RoundTripper {
-	base := http.DefaultTransport
+//distribution.RegisterManifestSchema
 
-	modifiers := []transport.RequestModifier{
-		transport.NewHeaderRequestModifier(http.Header{
-			"User-Agent": []string{"my-client"},
-		}),
-	}
-
-	authTransport := transport.NewTransport(base, modifiers...)
-	pingClient := &http.Client{
-		Transport: authTransport,
-		Timeout:   5 * time.Second,
-	}
-	req, err := http.NewRequest("GET", server+"/v2/", nil)
-	if err != nil {
-		panic(err)
-	}
-
-	challengeManager := challenge.NewSimpleManager()
-	resp, err := pingClient.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer resp.Body.Close()
-	if err := challengeManager.AddResponse(resp); err != nil {
-		panic(err)
-	}
-	tokenHandler := auth.NewTokenHandler(base, nil, image, "pull")
-	modifiers = append(modifiers, auth.NewAuthorizer(challengeManager, tokenHandler, auth.NewBasicHandler(nil)))
-
-	return transport.NewTransport(base, modifiers...)
+func init() {
+	manifestlist.FromDescriptors([]manifestlist.ManifestDescriptor{})
+	_ = manifest.SchemaVersion
 }
 
 func manifestHandler(w http.ResponseWriter, r *http.Request) {
@@ -60,13 +31,6 @@ func manifestHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	name := repo + "/" + image
 	reference := vars["reference"]
-
-	// "Accept" header
-	// application/vnd.docker.distribution.manifest.v2+json
-	// application/vnd.docker.distribution.manifest.list.v2+json
-	// return "Content-Type" header
-	// https://docs.docker.com/registry/spec/api/#manifest
-	//log.Printf("name:%s  reference:%s", name, reference)
 
 	//repositoryName, err := ref.WithName("index.docker.io/" + name)
 	repositoryName, err := ref.WithName(name)
@@ -94,18 +58,16 @@ func manifestHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//distribution.ManifestMediaTypes()
-
-	manifest, err := manifestService.Get(ctx, digest.Digest(""), distribution.WithTag(reference)) /*distribution.WithManifestMediaTypes([]string{
-		"application/vnd.docker.distribution.manifest.v2+json",
-		"application/vnd.docker.distribution.manifest.list.v2+json",
-	})*/
+	manifest, err := manifestService.Get(ctx, digest.Digest(""), distribution.WithTag(reference))
 	if err != nil {
 		log.Printf("error getting manifest: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	log.Printf("manifests: %v", manifest)
+
+	for _, d := range manifest.References() {
+		log.Printf("descriptor: %v", d.Descriptor())
+	}
 
 	// https://github.com/docker/distribution/tree/master/registry/client
 	// https://github.com/docker/distribution/blob/master/registry/handlers/manifests.go
