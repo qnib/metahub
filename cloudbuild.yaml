@@ -1,0 +1,6 @@
+steps:
+#- name: "ubuntu"
+#  args: ["sed", "-i", "-e", "s/__CACHE_NAME__/$BUILD_ID/", "client/worker.js"]
+- name: "gcr.io/cloud-builders/gcloud"
+  args: ["app", "deploy", "app.yaml", "index.yaml", "--version=1"]
+timeout: "1600s"
