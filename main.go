@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	_ "metahub/registry_api"
 )
 
 func main() {

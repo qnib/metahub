@@ -1,5 +1,9 @@
 runtime: go111
 
-#handlers:
-#- url: /.*
-#  script: _go_app
+handlers:
+- url: /
+  static_files: static_ui/app.html
+  upload: static_ui/app.html
+- url: /(.*\.(js|png|ico|json|css|jpg))$
+  static_files: static_ui/\1
+  upload: static_ui/.*\.(js|png|ico|json|css|jpg)$

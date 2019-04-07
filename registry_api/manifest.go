@@ -1,55 +1,64 @@
-package main
+package api
 
 import (
-	"encoding/base64"
 	"log"
 	"net/http"
-	"net/url"
+	"time"
 
 	"github.com/docker/distribution"
 
 	ref "github.com/docker/distribution/reference"
 	client "github.com/docker/distribution/registry/client"
-	_ "github.com/docker/distribution/registry/storage/cache"
-	_ "github.com/docker/distribution/registry/storage/cache/memory"
+	"github.com/docker/distribution/registry/client/auth"
+	"github.com/docker/distribution/registry/client/auth/challenge"
+	"github.com/docker/distribution/registry/client/transport"
 	"github.com/gorilla/mux"
 	digest "github.com/opencontainers/go-digest"
 )
 
-func init() {
-	r := mux.NewRouter()
-	r.HandleFunc("/v2", baseHandler).Methods("GET")
-	r.HandleFunc("/v2/{name}/manifests/{reference}", manifestHandler).Methods("GET")
-	http.Handle("/v2/", r)
+func makeHubTransport(server, image string) http.RoundTripper {
+	base := http.DefaultTransport
+
+	modifiers := []transport.RequestModifier{
+		transport.NewHeaderRequestModifier(http.Header{
+			"User-Agent": []string{"my-client"},
+		}),
+	}
+
+	authTransport := transport.NewTransport(base, modifiers...)
+	pingClient := &http.Client{
+		Transport: authTransport,
+		Timeout:   5 * time.Second,
+	}
+	req, err := http.NewRequest("GET", server+"/v2/", nil)
+	if err != nil {
+		panic(err)
+	}
+
+	challengeManager := challenge.NewSimpleManager()
+	resp, err := pingClient.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+	if err := challengeManager.AddResponse(resp); err != nil {
+		panic(err)
+	}
+	tokenHandler := auth.NewTokenHandler(base, nil, image, "pull")
+	modifiers = append(modifiers, auth.NewAuthorizer(challengeManager, tokenHandler, auth.NewBasicHandler(nil)))
+
+	return transport.NewTransport(base, modifiers...)
 }
 
-func baseHandler(w http.ResponseWriter, r *http.Request) {
-}
-
-type cred struct {
-}
-
-func (c *cred) Basic(*url.URL) (string, string) {
-	log.Printf("baaasic")
-	return "hovu96", "test"
-}
-
-func (c *cred) RefreshToken(*url.URL, string) string {
-	return ""
-}
-
-func (c *cred) SetRefreshToken(realm *url.URL, service, token string) {
-
-}
-
-func basicAuth(username, password string) string {
-	auth := username + ":" + password
-	return base64.StdEncoding.EncodeToString([]byte(auth))
-}
 func manifestHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	vars := mux.Vars(r)
-	name := vars["name"]
+	image := vars["image"]
+	repo := vars["repo"]
+	if repo == "" {
+		repo = "library"
+	}
+	name := repo + "/" + image
 	reference := vars["reference"]
 
 	// "Accept" header
@@ -67,15 +76,11 @@ func manifestHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var transportAuth http.RoundTripper
-	//challengeManager := challenge.NewSimpleManager()
-	//authenticationHandler := auth.NewBasicHandler(&cred{})
-	//authorizer := auth.NewAuthorizer(challengeManager, authenticationHandler)
-	//authHeader := http.Header{}
-	//authHeader.Set("Authorization", "Basic "+basicAuth("user", "pass"))
-	//transportAuth := transport.NewTransport(nil, transport.NewHeaderRequestModifier(authHeader))
+	serverBase := "https://registry-1.docker.io"
 
-	repository, err := client.NewRepository(repositoryName, "https://registry-1.docker.io/", transportAuth)
+	transportAuth := makeHubTransport(serverBase, name)
+
+	repository, err := client.NewRepository(repositoryName, serverBase, transportAuth)
 	if err != nil {
 		log.Printf("error creating repository object: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -91,10 +96,10 @@ func manifestHandler(w http.ResponseWriter, r *http.Request) {
 
 	//distribution.ManifestMediaTypes()
 
-	manifest, err := manifestService.Get(ctx, digest.Digest(""), distribution.WithTag(reference), distribution.WithManifestMediaTypes([]string{
-		//"application/vnd.docker.distribution.manifest.v2+json",
+	manifest, err := manifestService.Get(ctx, digest.Digest(""), distribution.WithTag(reference)) /*distribution.WithManifestMediaTypes([]string{
+		"application/vnd.docker.distribution.manifest.v2+json",
 		"application/vnd.docker.distribution.manifest.list.v2+json",
-	}))
+	})*/
 	if err != nil {
 		log.Printf("error getting manifest: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
