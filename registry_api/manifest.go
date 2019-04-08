@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"reflect"
 
 	"github.com/docker/distribution"
 
 	manifestlist "github.com/docker/distribution/manifest/manifestlist"
-	manifest "github.com/docker/distribution/manifest/schema2"
+	manifestSchema2 "github.com/docker/distribution/manifest/schema2"
 	ref "github.com/docker/distribution/reference"
 	client "github.com/docker/distribution/registry/client"
 	"github.com/gorilla/mux"
@@ -20,7 +19,7 @@ import (
 
 func init() {
 	manifestlist.FromDescriptors([]manifestlist.ManifestDescriptor{})
-	_ = manifest.SchemaVersion
+	_ = manifestSchema2.SchemaVersion
 }
 
 func manifestHandler(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +46,9 @@ func manifestHandler(w http.ResponseWriter, r *http.Request) {
 
 	// get image reference
 	var imageReference string
+	//var iirrr ref.Reference
 	var d digest.Digest
+	var isDigest bool
 	{
 		imageReference = vars["reference"]
 
@@ -57,6 +58,7 @@ func manifestHandler(w http.ResponseWriter, r *http.Request) {
 			//manifestHandler.Tag = reference
 		} else {
 			d = dgst
+			isDigest = true
 			//manifestHandler.Digest = dgst
 		}
 
@@ -84,31 +86,49 @@ func manifestHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	tag := distribution.WithTag(imageReference)
-	manifest, err := manifestService.Get(ctx, digest.Digest(""), tag)
+	var manifest distribution.Manifest
+	if isDigest {
+		manifest, err = manifestService.Get(ctx, d)
+	} else {
+		manifest, err = manifestService.Get(ctx, digest.Digest(""), tag)
+	}
 	if err != nil {
 		log.Printf("error getting manifest: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	manifestList, isManifestList := manifest.(*manifestlist.DeserializedManifestList)
-	if !isManifestList {
-		log.Printf("unexpected menifest type: %v", reflect.TypeOf(manifest))
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+	mm, isManifest := manifest.(*manifestSchema2.DeserializedManifest)
+	if isManifest {
+		//log.Printf("sha: %v", mm.)
+		for _, l := range mm.Layers {
+			if len(l.URLs) == 0 {
+				/*l.URLs = []string{
+					"http://localhost:8080/test",
+				}*/
+			}
+			//log.Printf("layer urls: %v sha: %v", l.URLs, l.Digest)
+		}
+		//url := fmt.Sprintf("%s%s", serverBase, r.URL.Path)
+		//log.Printf("url: %s", url)
+		//http.Redirect(w, r, url, http.StatusMovedPermanently)
+		//w.WriteHeader(http.StatusInternalServerError)
+		//return
 	}
-	for _, m := range manifestList.Manifests {
-		//p := m.Platform.
-		_ = m
-		//log.Printf("p: %v  urls: %v", p, m.URLs)
+
+	manifestList, isManifestList := manifest.(*manifestlist.DeserializedManifestList)
+	if isManifestList {
+		// TODO: liste filtern
+		/*for _, m := range manifestList.Manifests {
+			p := m.Platform.
+		}*/
+		manifestList.References()
 	}
 
 	ct, p, err := manifest.Payload()
 	if err != nil {
 		return
 	}
-
-	log.Printf("Content-Type=%v", ct)
 
 	w.Header().Set("Content-Type", ct)
 	w.Header().Set("Content-Length", fmt.Sprint(len(p)))
