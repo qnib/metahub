@@ -7,3 +7,6 @@ handlers:
 - url: /(.*\.(js|png|ico|json|css|jpg))$
   static_files: static_ui/\1
   upload: static_ui/.*\.(js|png|ico|json|css|jpg)$
+
+env_variables:
+  DATASTORE_PROJECT_ID: metahub

@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	_ "metahub/registry_api"
+	"metahub/handlers"
 )
 
 func main() {
@@ -14,6 +14,8 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
+
+	handlers.Register()
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }
