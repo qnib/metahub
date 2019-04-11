@@ -7,7 +7,6 @@ import (
 
 	"github.com/docker/distribution"
 	manifestListSchema "github.com/docker/distribution/manifest/manifestlist"
-	manifestSchema "github.com/docker/distribution/manifest/schema2"
 	registryClient "github.com/docker/distribution/registry/client"
 	"github.com/gorilla/mux"
 	digestLib "github.com/opencontainers/go-digest"
@@ -15,11 +14,6 @@ import (
 
 // https://docs.docker.com/registry/spec/manifest-v2-2/#image-manifest-field-descriptions
 // https://docs.docker.com/registry/spec/api/#digest-parameter
-
-func init() {
-	_ = manifestListSchema.SchemaVersion
-	_ = manifestSchema.SchemaVersion
-}
 
 func (reg registry) manifestsHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -74,7 +68,7 @@ func (reg registry) manifestsHandler(w http.ResponseWriter, r *http.Request) {
 
 	manifestList, isManifestList := manifest.(*manifestListSchema.DeserializedManifestList)
 	if isManifestList {
-		newManifestList, err := filterManifestsFromList(manifestList)
+		newManifestList, err := filterManifestsFromList(r, manifestList)
 		if err != nil {
 			log.Printf("error filtering manifest list: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -99,15 +93,24 @@ func (reg registry) manifestsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(p)
 }
 
-func filterManifestsFromList(menifestList *manifestListSchema.DeserializedManifestList) (*manifestListSchema.DeserializedManifestList, error) {
-	for i, m := range menifestList.Manifests {
+func filterManifestsFromList(r *http.Request, manifestList *manifestListSchema.DeserializedManifestList) (*manifestListSchema.DeserializedManifestList, error) {
+
+	username, _, _ := r.BasicAuth()
+
+	for i, m := range manifestList.Manifests {
 		/*if m.Platform.OS != "windows" || m.Platform.Architecture != "amd64" {
 			continue
 		}*/
+		if len(m.Platform.Features) != 1 {
+			continue
+		}
+		if m.Platform.Features[0] != username {
+			continue
+		}
 		log.Printf("Platform: %v", m.Platform)
-		menifestList.Manifests[i] = m
+		manifestList.Manifests[i] = m
 	}
-	newManifestList, err := manifestListSchema.FromDescriptors(menifestList.Manifests)
+	newManifestList, err := manifestListSchema.FromDescriptors(manifestList.Manifests)
 	if err != nil {
 		return nil, fmt.Errorf("error generating new manifest list: %v", err)
 	}
