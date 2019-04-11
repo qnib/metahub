@@ -83,9 +83,9 @@ func (reg registry) manifestsHandler(w http.ResponseWriter, r *http.Request) {
 		manifest = newManifestList
 	}
 
-	_, isManifest := manifest.(*manifestSchema.DeserializedManifest)
-	if isManifest {
-	}
+	//_, isManifest := manifest.(*manifestSchema.DeserializedManifest)
+	//if isManifest {
+	//}
 
 	ct, p, err := manifest.Payload()
 	if err != nil {
@@ -101,9 +101,10 @@ func (reg registry) manifestsHandler(w http.ResponseWriter, r *http.Request) {
 
 func filterManifestsFromList(menifestList *manifestListSchema.DeserializedManifestList) (*manifestListSchema.DeserializedManifestList, error) {
 	for i, m := range menifestList.Manifests {
-		if m.Platform.OS != "windows" || m.Platform.Architecture != "amd64" {
+		/*if m.Platform.OS != "windows" || m.Platform.Architecture != "amd64" {
 			continue
-		}
+		}*/
+		log.Printf("Platform: %v", m.Platform)
 		menifestList.Manifests[i] = m
 	}
 	newManifestList, err := manifestListSchema.FromDescriptors(menifestList.Manifests)
