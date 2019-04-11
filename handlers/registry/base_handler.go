@@ -4,6 +4,6 @@ import (
 	"net/http"
 )
 
-func baseHandler(w http.ResponseWriter, r *http.Request) {
+func (reg registry) baseHandler(w http.ResponseWriter, r *http.Request) {
 
 }

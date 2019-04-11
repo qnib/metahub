@@ -21,7 +21,7 @@ func init() {
 	_ = manifestSchema2.SchemaVersion
 }
 
-func manifestsHandler(w http.ResponseWriter, r *http.Request) {
+func (reg registry) manifestsHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	vars := mux.Vars(r)
 
@@ -47,8 +47,7 @@ func manifestsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// get manifest(-list) from backend registry
-	serverBase := "https://registry-1.docker.io"
-	transportAuth := makeHubTransport(serverBase, repositoryName.Name())
+	transportAuth := backendAuthTransport(serverBase, repositoryName.Name())
 	repository, err := registryClient.NewRepository(repositoryName, serverBase, transportAuth)
 	if err != nil {
 		log.Printf("error creating repository object: %v", err)
@@ -104,12 +103,4 @@ func manifestsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Docker-Content-Digest", digest.String())
 	w.Header().Set("Etag", fmt.Sprintf(`"%s"`, digest))
 	w.Write(p)
-
-	/*for _, d := range manifest.References() {
-		log.Printf("descriptor: %v", d.Descriptor())
-		//d.Descriptor()
-	}*/
-
-	// https://github.com/docker/distribution/tree/master/registry/client
-	// https://github.com/docker/distribution/blob/master/registry/handlers/manifests.go
 }

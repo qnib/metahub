@@ -15,7 +15,11 @@ func main() {
 		port = "8080"
 	}
 
-	handlers.Register()
+	env := gaeEnv{}
+	handlers.Register(&env)
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
+}
+
+type gaeEnv struct {
 }

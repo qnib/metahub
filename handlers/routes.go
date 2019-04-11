@@ -1,12 +1,13 @@
 package handlers
 
 import (
+	"metahub/environment"
 	"net/http"
 
 	"metahub/handlers/registry"
 )
 
 // Register registers handlers/routers
-func Register() {
-	http.Handle("/v2/", registry.NewRouter())
+func Register(env environment.Environment) {
+	http.Handle("/v2/", registry.NewRouter(env))
 }

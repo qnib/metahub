@@ -9,7 +9,9 @@ import (
 	"github.com/docker/distribution/registry/client/transport"
 )
 
-func makeHubTransport(server, image string) http.RoundTripper {
+var serverBase = "https://registry-1.docker.io"
+
+func backendAuthTransport(server, image string) http.RoundTripper {
 	base := http.DefaultTransport
 
 	modifiers := []transport.RequestModifier{

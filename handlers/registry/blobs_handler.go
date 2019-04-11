@@ -1,16 +1,18 @@
 package registry
 
 import (
+	"io"
 	"log"
 	"net/http"
+	"strconv"
 
+	registryClient "github.com/docker/distribution/registry/client"
 	"github.com/gorilla/mux"
 	digest "github.com/opencontainers/go-digest"
 )
 
-func blobsHandler(w http.ResponseWriter, r *http.Request) {
-
-	_ = r.Context()
+func (reg registry) blobsHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	vars := mux.Vars(r)
 
 	// get image repository
@@ -31,4 +33,44 @@ func blobsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	_ = digest
 
+	// get backend blob service
+	transportAuth := backendAuthTransport(serverBase, repositoryName.Name())
+	repository, err := registryClient.NewRepository(repositoryName, serverBase, transportAuth)
+	if err != nil {
+		log.Printf("error creating repository object: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	blobService := repository.Blobs(ctx)
+
+	// get blob stats
+	blobStats, err := blobService.Stat(ctx, digest)
+	if err != nil {
+		log.Printf("error loading blob stats from backend: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	// set response headers
+	w.Header().Set("Content-Length", strconv.FormatInt(blobStats.Size, 10))
+	w.Header().Set("Content-Type", blobStats.MediaType)
+	w.Header().Set("Docker-Content-Digest", digest.String())
+	w.Header().Set("Etag", digest.String())
+
+	// open blob content stream
+	blobContentReader, err := blobService.Open(ctx, digest)
+	if err != nil {
+		log.Printf("error getting blob stream from backend: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	defer blobContentReader.Close()
+
+	// stream blob content to client
+	_, err = io.CopyN(w, blobContentReader, blobStats.Size)
+	if err != nil {
+		log.Printf("error getting blob stream from backend: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 }
