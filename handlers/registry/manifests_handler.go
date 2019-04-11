@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/docker/distribution"
-	manifestlist "github.com/docker/distribution/manifest/manifestlist"
-	manifestSchema2 "github.com/docker/distribution/manifest/schema2"
+	manifestListSchema "github.com/docker/distribution/manifest/manifestlist"
+	manifestSchema "github.com/docker/distribution/manifest/schema2"
 	registryClient "github.com/docker/distribution/registry/client"
 	"github.com/gorilla/mux"
 	digestLib "github.com/opencontainers/go-digest"
@@ -17,8 +17,8 @@ import (
 // https://docs.docker.com/registry/spec/api/#digest-parameter
 
 func init() {
-	manifestlist.FromDescriptors([]manifestlist.ManifestDescriptor{})
-	_ = manifestSchema2.SchemaVersion
+	_ = manifestListSchema.SchemaVersion
+	_ = manifestSchema.SchemaVersion
 }
 
 func (reg registry) manifestsHandler(w http.ResponseWriter, r *http.Request) {
@@ -46,7 +46,7 @@ func (reg registry) manifestsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// get manifest(-list) from backend registry
+	// get manifest from backend registry
 	transportAuth := backendAuthTransport(serverBase, repositoryName.Name())
 	repository, err := registryClient.NewRepository(repositoryName, serverBase, transportAuth)
 	if err != nil {
@@ -72,24 +72,18 @@ func (reg registry) manifestsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	manifestList, isManifestList := manifest.(*manifestlist.DeserializedManifestList)
+	manifestList, isManifestList := manifest.(*manifestListSchema.DeserializedManifestList)
 	if isManifestList {
-		for i, m := range manifestList.Manifests {
-			if m.Platform.OS != "windows" || m.Platform.Architecture != "amd64" {
-				continue
-			}
-			manifestList.Manifests[i] = m
-		}
-		newManifestList, err := manifestlist.FromDescriptors(manifestList.Manifests)
+		newManifestList, err := filterManifestsFromList(manifestList)
 		if err != nil {
-			log.Printf("error generating new manifest list: %v", err)
+			log.Printf("error filtering manifest list: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 		manifest = newManifestList
 	}
 
-	_, isManifest := manifest.(*manifestSchema2.DeserializedManifest)
+	_, isManifest := manifest.(*manifestSchema.DeserializedManifest)
 	if isManifest {
 	}
 
@@ -103,4 +97,18 @@ func (reg registry) manifestsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Docker-Content-Digest", digest.String())
 	w.Header().Set("Etag", fmt.Sprintf(`"%s"`, digest))
 	w.Write(p)
+}
+
+func filterManifestsFromList(menifestList *manifestListSchema.DeserializedManifestList) (*manifestListSchema.DeserializedManifestList, error) {
+	for i, m := range menifestList.Manifests {
+		if m.Platform.OS != "windows" || m.Platform.Architecture != "amd64" {
+			continue
+		}
+		menifestList.Manifests[i] = m
+	}
+	newManifestList, err := manifestListSchema.FromDescriptors(menifestList.Manifests)
+	if err != nil {
+		return nil, fmt.Errorf("error generating new manifest list: %v", err)
+	}
+	return newManifestList, nil
 }
