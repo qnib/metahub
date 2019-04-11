@@ -7,16 +7,22 @@ window.app = new Vue({
     <v-navigation-drawer v-model="drawer" fixed app>
     <v-img src="./icons/icon-512x512.png"></v-img>
     <v-list>
-        <v-subheader>Repositories</v-subheader>
+        <v-subheader>MetaHub</v-subheader>
         <v-list-tile avatar ripple>
           <v-list-tile-avatar><v-icon>dashboard</v-icon></v-list-tile-avatar>
-          <v-list-tile-content><v-list-tile-title>Alpine</v-list-tile-title></v-list-tile-content>
+          <v-list-tile-content><v-list-tile-title>Runtime Environments</v-list-tile-title></v-list-tile-content>
         </v-list-tile>
         <v-divider inset></v-divider>
         <v-list-tile avatar ripple>
           <v-list-tile-avatar><v-icon>dashboard</v-icon></v-list-tile-avatar>
-          <v-list-tile-content><v-list-tile-title>Ubuntu</v-list-tile-title></v-list-tile-content>
+          <v-list-tile-content><v-list-tile-title>Backend Registries</v-list-tile-title></v-list-tile-content>
         </v-list-tile>
+        <v-divider inset></v-divider>
+        <v-list-tile avatar ripple>
+          <v-list-tile-avatar><v-icon>dashboard</v-icon></v-list-tile-avatar>
+          <v-list-tile-content><v-list-tile-title>Rate Limiting</v-list-tile-title></v-list-tile-content>
+        </v-list-tile>
+        <v-divider inset></v-divider>
       </v-list>
     </v-navigation-drawer>
 
