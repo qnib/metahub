@@ -4,30 +4,21 @@
       <v-img :src="require('./assets/whales.jpg')"></v-img>
       <v-list>
         <v-subheader>MetaHub</v-subheader>
-        <v-list-tile avatar ripple>
+        <v-list-tile avatar ripple to="/">
           <v-list-tile-avatar>
             <v-icon>dashboard</v-icon>
           </v-list-tile-avatar>
           <v-list-tile-content>
-            <v-list-tile-title>Runtime Environments</v-list-tile-title>
+            <v-list-tile-title>Welcome</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
         <v-divider inset></v-divider>
-        <v-list-tile avatar ripple>
+        <v-list-tile avatar ripple to="/machinetypes">
           <v-list-tile-avatar>
             <v-icon>dashboard</v-icon>
           </v-list-tile-avatar>
           <v-list-tile-content>
-            <v-list-tile-title>Backend Registries</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-divider inset></v-divider>
-        <v-list-tile avatar ripple>
-          <v-list-tile-avatar>
-            <v-icon>dashboard</v-icon>
-          </v-list-tile-avatar>
-          <v-list-tile-content>
-            <v-list-tile-title>Rate Limiting</v-list-tile-title>
+            <v-list-tile-title>Machine Types</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
         <v-divider inset></v-divider>
@@ -40,7 +31,7 @@
         <span class="font-weight-light">Hub</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn v-if="!isAuthenticated" flat @click="authenticate('github')">
+      <v-btn v-if="!isAuthenticated" flat @click="login()">
         <span>Sign In</span>
       </v-btn>
       <v-btn v-if="isAuthenticated" flat @click="logout()">
@@ -49,43 +40,32 @@
     </v-toolbar>
     <v-content>
       <v-container align-center>
-        <Welcome/>
+        <router-view></router-view>
       </v-container>
     </v-content>
   </v-app>
 </template>
 
 <script>
-import Welcome from "./components/Welcome";
-
 export default {
-  name: "App",
-  components: {
-    Welcome
-  },
+  name: "MetaHub",
   data() {
     return {
       drawer: undefined,
-      isAuthenticated: this.$auth.isAuthenticated()
     };
   },
+  computed: {
+    isAuthenticated(){
+      return this.$auth.isAuthenticated()
+    }
+  },
   methods: {
-    authenticate(provider) {
-      var self = this;
-      this.$auth
-        .authenticate(provider)
-        .then(function() {
-          window.console.log("logged in");
-          self.isAuthenticated = true;
-        })
-        .catch(function(error) {
-          window.console.log(error);
-          alert(error);
-        });
+    login() {
+      this.$router.push("/login");
     },
     logout() {
       this.$auth.logout();
-      this.isAuthenticated = false;
+      this.$router.push("/");
     }
   }
 };
