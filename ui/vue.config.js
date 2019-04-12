@@ -5,7 +5,7 @@ let command = argv['_'][0]
 switch (command) {
     case 'build':
         config = {
-            baseUrl: '/static/gen',
+            publicPath: '/static/gen',
             assetsDir: './',
             outputDir: '../static/gen',
             pages: {
