@@ -1,7 +1,10 @@
 <template>
-  <v-dialog :value="dialog" width="500">
+  <v-dialog :value="dialog" persistent width="500">
     <v-card>
-      <v-card-title class="headline grey lighten-2" primary-title>Sign In to MetaHub</v-card-title>
+      <v-card-title class="headline grey lighten-2" primary-title>Sign In</v-card-title>
+      <v-card-text>
+        Select an authentication provider to sign in to MetaHub:
+      </v-card-text>
       <v-card-text>
         <v-btn @click="authenticate('github')">
           <span>Sign in with GitHub</span>
@@ -42,7 +45,6 @@ export default {
         .catch(this.failure);
     },
     success() {
-      window.console.log("logged in");
       this.hide();
     },
     failure(error) {
