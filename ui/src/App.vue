@@ -40,8 +40,11 @@
         <span class="font-weight-light">Hub</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn flat @click="authenticate('github')">
+      <v-btn v-if="!isAuthenticated" flat @click="authenticate('github')">
         <span>Sign In</span>
+      </v-btn>
+      <v-btn v-if="isAuthenticated" flat @click="logout()">
+        <span>Sign Out</span>
       </v-btn>
     </v-toolbar>
     <v-content>
@@ -62,15 +65,27 @@ export default {
   },
   data() {
     return {
-      drawer: undefined
+      drawer: undefined,
+      isAuthenticated: this.$auth.isAuthenticated()
     };
   },
   methods: {
     authenticate(provider) {
-      this.$auth.authenticate(provider).then(function() {
-        // Execute application logic after successful social authentication
-        window.console.log("yeah");
-      });
+      var self = this;
+      this.$auth
+        .authenticate(provider)
+        .then(function() {
+          window.console.log("logged in");
+          self.isAuthenticated = true;
+        })
+        .catch(function(error) {
+          window.console.log(error);
+          alert(error);
+        });
+    },
+    logout() {
+      this.$auth.logout();
+      this.isAuthenticated = false;
     }
   }
 };
