@@ -1,4 +1,5 @@
 runtime: go111
+main: ./cmd/gae
 
 handlers:
 - url: /static
@@ -9,7 +10,7 @@ handlers:
 - url: /auth/
   script: auto
   secure: always
-- url: .*
+- url: /.*
   static_files: templates/gen/index.html
   upload: templates/gen/index.html
   secure: always
