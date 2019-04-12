@@ -57,7 +57,7 @@ import Welcome from "./components/Welcome";
 import MachineTypes from "./components/MachineTypes";
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash',
   routes: [
     { path: '/', component: Welcome },
     { path: '/machinetypes', component: MachineTypes, meta: { requiresAuth: true } },
