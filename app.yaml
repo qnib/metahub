@@ -1,11 +1,16 @@
 runtime: go111
 
 handlers:
-- url: /
-  static_files: templates/gen/index.html
-  upload: templates/gen/index.html
 - url: /static
   static_dir: static
+- url: /v2/
+  script: auto
+- url: /auth/
+  script: auto
+- url: .*
+  static_files: templates/gen/index.html
+  upload: templates/gen/index.html
+  secure: always
 
 env_variables:
   DATASTORE_PROJECT_ID: metahub
