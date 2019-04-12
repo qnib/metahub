@@ -5,8 +5,10 @@ handlers:
   static_dir: static
 - url: /v2/
   script: auto
+  secure: always
 - url: /auth/
   script: auto
+  secure: always
 - url: .*
   static_files: templates/gen/index.html
   upload: templates/gen/index.html
