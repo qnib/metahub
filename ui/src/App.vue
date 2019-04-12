@@ -57,7 +57,7 @@ export default {
   data() {
     return {
       drawer: undefined,
-      isAuthenticated: this.$auth.isAuthenticated()
+      isAuthenticated: this.isLoggedIn(),
     };
   },
   methods: {
@@ -65,10 +65,11 @@ export default {
       this.login();
     },
     loginDialogClosed() {
-      this.isAuthenticated = this.$auth.isAuthenticated();
+      this.isAuthenticated = this.isLoggedIn();
     },
     logoutClicked() {
       this.logout();
+      this.isAuthenticated = this.isLoggedIn();
     }
   }
 };
