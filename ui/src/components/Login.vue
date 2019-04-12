@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-btn @click="authenticate('github')">
-      <span>Sign In</span>
+      <span>Sign in with GitHub</span>
     </v-btn>
   </v-container>
 </template>

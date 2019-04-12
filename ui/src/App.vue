@@ -52,19 +52,21 @@ export default {
   data() {
     return {
       drawer: undefined,
+      isAuthenticated: this.$auth.isAuthenticated()
     };
   },
-  computed: {
-    isAuthenticated(){
-      return this.$auth.isAuthenticated()
+  /*computed: {
+    isAuthenticated() {
+      return this.$auth.isAuthenticated();
     }
-  },
+  },*/
   methods: {
     login() {
       this.$router.push("/login");
     },
     logout() {
       this.$auth.logout();
+      this.isAuthenticated = false;
       this.$router.push("/");
     }
   }
