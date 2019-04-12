@@ -1,5 +1,6 @@
 runtime: go111
 main: ./cmd/gae
+default_expiration: "1m"
 
 handlers:
 - url: /static
