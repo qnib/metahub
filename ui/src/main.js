@@ -9,11 +9,11 @@ Vue.config.productionTip = false
 
 Vue.use(VueAxios, axios)
 Vue.use(VueAuthenticate, {
-  baseUrl: 'http://localhost:8081', // Your API domain  
+  //baseUrl: 'http://localhost:8081', // Your API domain  
   providers: {
     github: {
-      clientId: '',
-      redirectUri: 'http://localhost:8080/auth/callback' // Your client app URL
+      clientId: '65d9c15a3eb4e0afdd01',
+      //redirectUri: 'http://localhost:8081/auth/callback' // Your client app URL
     }
   }
 })

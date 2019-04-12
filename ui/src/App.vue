@@ -40,8 +40,8 @@
         <span class="font-weight-light">Hub</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn flat href="https://github.com/vuetifyjs/vuetify/releases/latest" target="_blank">
-        <span class="mr-2">Latest Release</span>
+      <v-btn flat @click="authenticate('github')">
+        <span>Sign In</span>
       </v-btn>
     </v-toolbar>
     <v-content>
@@ -64,6 +64,14 @@ export default {
     return {
       drawer: undefined
     };
+  },
+  methods: {
+    authenticate(provider) {
+      this.$auth.authenticate(provider).then(function() {
+        // Execute application logic after successful social authentication
+        window.console.log("yeah");
+      });
+    }
   }
 };
 </script>
