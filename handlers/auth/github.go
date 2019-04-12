@@ -69,7 +69,7 @@ func githubHandler(w http.ResponseWriter, r *http.Request) {
 	//redirectUri: "https://metahub.appspot.com"
 	/*
 		TODO:
-		https://github.com/sahat/satellizer:
+		https://github.com/sahat/satellizer
 		Authorization code is exchanged for access token.
 		Server: User information is retrived using the access token from Step 6.
 		Server: Look up the user by their unique Provider ID. If user already exists, grab the existing user, otherwise create a new user account.

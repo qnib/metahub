@@ -31,10 +31,10 @@
         <span class="font-weight-light">Hub</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn v-if="!isAuthenticated" flat @click="login()">
+      <v-btn v-if="!isAuthenticated" flat @click="loginClicked()">
         <span>Sign In</span>
       </v-btn>
-      <v-btn v-if="isAuthenticated" flat @click="logout()">
+      <v-btn v-if="isAuthenticated" flat @click="logoutClicked()">
         <span>Sign Out</span>
       </v-btn>
     </v-toolbar>
@@ -43,31 +43,32 @@
         <router-view></router-view>
       </v-container>
     </v-content>
+    <LoginDialog @close="loginDialogClosed()" ref="login-dialog"/>
   </v-app>
 </template>
 
 <script>
+import LoginDialog from "./components/LoginDialog";
 export default {
   name: "MetaHub",
+  components: {
+    LoginDialog
+  },
   data() {
     return {
       drawer: undefined,
       isAuthenticated: this.$auth.isAuthenticated()
     };
   },
-  /*computed: {
-    isAuthenticated() {
-      return this.$auth.isAuthenticated();
-    }
-  },*/
   methods: {
-    login() {
-      this.$router.push("/login");
+    loginClicked() {
+      this.login();
     },
-    logout() {
-      this.$auth.logout();
-      this.isAuthenticated = false;
-      this.$router.push("/");
+    loginDialogClosed() {
+      this.isAuthenticated = this.$auth.isAuthenticated();
+    },
+    logoutClicked() {
+      this.logout();
     }
   }
 };
