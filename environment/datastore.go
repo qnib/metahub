@@ -1,4 +1,4 @@
-package main
+package environment
 
 /*
 	manifestClient "github.com/docker/distribution/registry/client"

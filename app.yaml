@@ -11,7 +11,7 @@ handlers:
 - url: /auth/
   script: auto
   secure: always
-- url: /.*
+- url: /
   static_files: templates/gen/index.html
   upload: templates/gen/index.html
   secure: always
