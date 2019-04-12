@@ -2,11 +2,10 @@ runtime: go111
 
 handlers:
 - url: /
-  static_files: static_ui/app.html
-  upload: static_ui/app.html
-- url: /(.*\.(js|png|ico|json|css|jpg))$
-  static_files: static_ui/\1
-  upload: static_ui/.*\.(js|png|ico|json|css|jpg)$
+  static_files: templates/gen/index.html
+  upload: templates/gen/index.html
+- url: /static
+  static_dir: static
 
 env_variables:
   DATASTORE_PROJECT_ID: metahub
