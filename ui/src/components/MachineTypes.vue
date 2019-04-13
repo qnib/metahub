@@ -1,10 +1,20 @@
 <template>
-  <v-container>Machine Types</v-container>
+  <v-container>
+    Machine Types
+    <v-btn @click="add()">add</v-btn>
+  </v-container>
 </template>
 
 <script>
 export default {
-  data: () => ({})
+  data: () => ({}),
+  methods: {
+    add() {
+      this.axios.get("/v2/").then(response => {
+        window.console.log(response);
+      });
+    }
+  }
 };
 </script>
 

@@ -57,7 +57,7 @@ export default {
   data() {
     return {
       drawer: undefined,
-      isAuthenticated: this.isLoggedIn(),
+      isAuthenticated: this.isLoggedIn()
     };
   },
   methods: {
