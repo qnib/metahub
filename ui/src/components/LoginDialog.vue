@@ -9,6 +9,9 @@
         <v-btn @click="authenticate('github')">
           <span>Sign in with GitHub</span>
         </v-btn>
+        <v-btn @click="authenticate('google')">
+          <span>Sign in with Google</span>
+        </v-btn>
       </v-card-text>
       <v-card-text v-if="hasError">{{ error }}</v-card-text>
       <v-divider></v-divider>

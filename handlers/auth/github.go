@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	oauthConf = &oauth2.Config{
+	gitHubConfig = &oauth2.Config{
 		ClientID:     "65d9c15a3eb4e0afdd01",
 		ClientSecret: "7d9c3f1e3ee87a912f2748a8161621c64e724509",
 		Scopes:       []string{"user:email"},
@@ -32,22 +32,22 @@ func githubHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	log.Printf("code: %s", body.Code)
+	//log.Printf("code: %s", body.Code)
 
 	//TODO: verify client id
 
-	token, err := oauthConf.Exchange(oauth2.NoContext, body.Code)
+	token, err := gitHubConfig.Exchange(oauth2.NoContext, body.Code)
 	if err != nil {
 		log.Printf("oauthConf.Exchange() failed")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	oauthClient := oauthConf.Client(oauth2.NoContext, token)
+	oauthClient := gitHubConfig.Client(oauth2.NoContext, token)
 	client := github.NewClient(oauthClient)
 	user, _, err := client.Users.Get(ctx, "")
 	if err != nil {
-		//log.Printf("error client.Users.Get(): %v", err)
+		log.Printf("error client.Users.Get(): %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -55,7 +55,7 @@ func githubHandler(w http.ResponseWriter, r *http.Request) {
 
 	jwt, err := tokenToJSON(token)
 	if err != nil {
-		//log.Printf("error creating JWT: %v", err)
+		log.Printf("error creating JWT: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -75,20 +75,4 @@ func githubHandler(w http.ResponseWriter, r *http.Request) {
 		Server: Look up the user by their unique Provider ID. If user already exists, grab the existing user, otherwise create a new user account.
 		Server: In both cases of Step 8, create a JSON Web Token and send it back to the client.
 	*/
-}
-
-func tokenToJSON(token *oauth2.Token) (string, error) {
-	d, err := json.Marshal(token)
-	if err != nil {
-		return "", err
-	}
-	return string(d), nil
-}
-
-func tokenFromJSON(jsonStr string) (*oauth2.Token, error) {
-	var token oauth2.Token
-	if err := json.Unmarshal([]byte(jsonStr), &token); err != nil {
-		return nil, err
-	}
-	return &token, nil
 }

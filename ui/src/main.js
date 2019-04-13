@@ -14,6 +14,9 @@ Vue.use(VueAuthenticate, {
     github: {
       clientId: '65d9c15a3eb4e0afdd01',
       //redirectUri: 'http://localhost:8081/auth/callback' // Your client app URL
+    },
+    google: {
+      clientId: '936040293434-i3m9p4km8it5np2bs253a7rvedchofs6.apps.googleusercontent.com',
     }
   }
 })

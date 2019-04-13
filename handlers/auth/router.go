@@ -12,5 +12,6 @@ import (
 func NewRouter(env environment.Environment) http.Handler {
 	router := mux.NewRouter()
 	router.HandleFunc("/auth/github", githubHandler).Methods("POST")
+	router.HandleFunc("/auth/google", googleHandler).Methods("POST")
 	return router
 }
