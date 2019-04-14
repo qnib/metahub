@@ -9,9 +9,9 @@ import (
 )
 
 // NewRouter returns a router for auth callbacks
-func NewRouter(env environment.Environment) http.Handler {
+func NewRouter(env environment.Environment, pathPrefix string) http.Handler {
 	router := mux.NewRouter()
-	router.HandleFunc("/auth/github", githubHandler).Methods("POST")
-	router.HandleFunc("/auth/google", googleHandler).Methods("POST")
+	router.HandleFunc(pathPrefix+"/github", githubHandler).Methods("POST")
+	router.HandleFunc(pathPrefix+"/google", googleHandler).Methods("POST")
 	return router
 }

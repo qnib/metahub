@@ -32,17 +32,17 @@ func init() {
 }
 
 // NewRouter returns a router for the registry API endpoints
-func NewRouter(env environment.Environment) http.Handler {
+func NewRouter(env environment.Environment, pathPrefix string) http.Handler {
 	reg := registry{
 		env: env,
 	}
 	router := mux.NewRouter()
 	router.Use(authMiddleware)
-	router.HandleFunc("/v2/{image}/manifests/{reference}", reg.manifestsHandler).Methods("GET")
-	router.HandleFunc("/v2/{repo}/{image}/manifests/{reference}", reg.manifestsHandler).Methods("GET")
-	router.HandleFunc("/v2/{image}/blobs/{reference}", reg.blobsHandler).Methods("GET")
-	router.HandleFunc("/v2/{repo}/{image}/blobs/{reference}", reg.blobsHandler).Methods("GET")
-	router.HandleFunc("/v2/", reg.baseHandler).Methods("GET")
+	router.HandleFunc(pathPrefix+"/{image}/manifests/{reference}", reg.manifestsHandler).Methods("GET")
+	router.HandleFunc(pathPrefix+"/{repo}/{image}/manifests/{reference}", reg.manifestsHandler).Methods("GET")
+	router.HandleFunc(pathPrefix+"/{image}/blobs/{reference}", reg.blobsHandler).Methods("GET")
+	router.HandleFunc(pathPrefix+"/{repo}/{image}/blobs/{reference}", reg.blobsHandler).Methods("GET")
+	router.HandleFunc(pathPrefix+"/", reg.baseHandler).Methods("GET")
 	return router
 }
 

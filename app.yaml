@@ -5,13 +5,7 @@ default_expiration: "1m"
 handlers:
 - url: /static
   static_dir: static
-- url: /v2/
-  script: auto
-  secure: always
-- url: /auth/
-  script: auto
-  secure: always
-- url: /
+- url: /$
   static_files: templates/gen/index.html
   upload: templates/gen/index.html
   secure: always

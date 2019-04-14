@@ -42,6 +42,11 @@ func githubHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	if !token.Valid() {
+		log.Printf("token invalid")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	oauthClient := gitHubConfig.Client(oauth2.NoContext, token)
 	client := github.NewClient(oauthClient)

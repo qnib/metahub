@@ -11,8 +11,6 @@ import (
 	googleAuth "golang.org/x/oauth2/google"
 )
 
-const oauthGoogleURLAPI = "https://www.googleapis.com/oauth2/v2/userinfo?access_token="
-
 func googleHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -54,8 +52,13 @@ func googleHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	if !token.Valid() {
+		log.Printf("token invalid")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
-	response, err := http.Get(oauthGoogleURLAPI + token.AccessToken)
+	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
 	if err != nil {
 		log.Printf("failed getting user info: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -100,7 +103,7 @@ func googleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//log.Print(jwt)
+	log.Print(jwt)
 
 	w.Write([]byte(jwt))
 }

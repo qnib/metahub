@@ -10,7 +10,7 @@ export default {
   data: () => ({}),
   methods: {
     add() {
-      this.axios.get("/v2/").then(response => {
+      this.axios.post("/machinetypes/add").then(response => {
         window.console.log(response);
       });
     }
