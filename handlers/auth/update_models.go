@@ -12,12 +12,19 @@ func updateAccountAccess(ctx context.Context, datastoreClient *datastore.Client,
 
 	accountName := getAccountName(provider, userID)
 	k := datastore.NameKey(accountEntityKind, accountName, nil)
-	if err := datastoreClient.Get(ctx, k, &a); err == datastore.ErrNoSuchEntity {
+	var aa account
+	if err := datastoreClient.Get(ctx, k, &aa); err == datastore.ErrNoSuchEntity {
 		if _, err := datastoreClient.Put(ctx, k, &a); err != nil {
 			return fmt.Errorf("error putting account: %v", err)
 		}
 	} else if err != nil {
 		return fmt.Errorf("error getting account: %v", err)
+	} else {
+		if aa.DisplayName != a.DisplayName {
+			if _, err := datastoreClient.Put(ctx, k, &a); err != nil {
+				return fmt.Errorf("error putting account: %v", err)
+			}
+		}
 	}
 
 	accessTokenKey := datastore.NameKey(accessTokenEntityKind, token.AccessToken, nil)

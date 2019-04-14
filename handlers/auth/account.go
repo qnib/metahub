@@ -7,7 +7,7 @@ import (
 var accountEntityKind = "account"
 
 type account struct {
-	DisplayName string `datastore:"image,noindex"`
+	DisplayName string `datastore:"name,noindex"`
 }
 
 func getAccountName(provider string, id string) string {
