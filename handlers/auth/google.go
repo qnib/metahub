@@ -91,7 +91,7 @@ func googleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := updateAccountAccess(ctx, datastoreClient, *token, userInfo.ID, account{
+	if err := updateAccountAccess(ctx, datastoreClient, providerNameGoogle, *token, userInfo.ID, account{
 		DisplayName: userInfo.Name,
 	}); err != nil {
 		log.Printf("error updating account: %v", err)

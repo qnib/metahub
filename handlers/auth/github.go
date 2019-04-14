@@ -21,6 +21,8 @@ var (
 	}
 )
 
+var providerNameGitHub = "github"
+
 func githubHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -67,7 +69,7 @@ func githubHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := updateAccountAccess(ctx, datastoreClient, *token, fmt.Sprintf("%d", user.GetID()), account{
+	if err := updateAccountAccess(ctx, datastoreClient, providerNameGitHub, *token, fmt.Sprintf("%d", user.GetID()), account{
 		DisplayName: user.GetName(),
 	}); err != nil {
 		log.Printf("error updating account: %v", err)

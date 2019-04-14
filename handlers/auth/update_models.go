@@ -8,9 +8,9 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func updateAccountAccess(ctx context.Context, datastoreClient *datastore.Client, token oauth2.Token, userID string, a account) error {
+func updateAccountAccess(ctx context.Context, datastoreClient *datastore.Client, provider string, token oauth2.Token, userID string, a account) error {
 
-	accountName := getAccountName(providerNameGoogle, userID)
+	accountName := getAccountName(provider, userID)
 	k := datastore.NameKey(accountEntityKind, accountName, nil)
 	if err := datastoreClient.Get(ctx, k, &a); err == datastore.ErrNoSuchEntity {
 		if _, err := datastoreClient.Put(ctx, k, &a); err != nil {
