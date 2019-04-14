@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"metahub/handlers"
+	"metahub/routes"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 	}
 
 	env := gaeEnv{}
-	handlers.Register(&env)
+	routes.Register(&env)
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }

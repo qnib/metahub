@@ -3,8 +3,8 @@ package machinetypes
 import (
 	"net/http"
 
+	"metahub/auth"
 	"metahub/environment"
-	"metahub/handlers/auth"
 
 	"github.com/gorilla/mux"
 )

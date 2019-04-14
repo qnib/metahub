@@ -70,7 +70,7 @@ func githubHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := updateAccountAccess(ctx, datastoreClient, providerNameGitHub, *token, fmt.Sprintf("%d", user.GetID()), account{
-		DisplayName: user.GetName(),
+		DisplayName: user.GetEmail(),
 	}); err != nil {
 		log.Printf("error updating account: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)

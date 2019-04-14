@@ -1,12 +1,12 @@
-package handlers
+package routes
 
 import (
 	"metahub/environment"
 	"net/http"
 
-	"metahub/handlers/auth"
-	"metahub/handlers/machinetypes"
-	"metahub/handlers/registry"
+	"metahub/auth"
+	"metahub/machinetypes"
+	"metahub/registry"
 )
 
 // Register registers handlers/routers
