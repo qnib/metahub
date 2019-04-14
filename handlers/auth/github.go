@@ -2,9 +2,11 @@ package auth
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
+	"cloud.google.com/go/datastore"
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 	githuboauth "golang.org/x/oauth2/github"
@@ -58,6 +60,21 @@ func githubHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("Logged in as GitHub user: %s\n", *user.Login)
 
+	datastoreClient, err := datastore.NewClient(ctx, "")
+	if err != nil {
+		log.Printf("failed to create client: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if err := updateAccountAccess(ctx, datastoreClient, *token, fmt.Sprintf("%d", user.GetID()), account{
+		DisplayName: user.GetName(),
+	}); err != nil {
+		log.Printf("error updating account: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	jwt, err := tokenToJSON(token)
 	if err != nil {
 		log.Printf("error creating JWT: %v", err)
@@ -65,19 +82,5 @@ func githubHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//log.Print(jwt)
-
 	w.Write([]byte(jwt))
-
-	//clientId: "..."
-	//code: "..."
-	//redirectUri: "https://metahub.appspot.com"
-	/*
-		TODO:
-		https://github.com/sahat/satellizer
-		Authorization code is exchanged for access token.
-		Server: User information is retrived using the access token from Step 6.
-		Server: Look up the user by their unique Provider ID. If user already exists, grab the existing user, otherwise create a new user account.
-		Server: In both cases of Step 8, create a JSON Web Token and send it back to the client.
-	*/
 }

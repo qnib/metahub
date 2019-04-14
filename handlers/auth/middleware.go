@@ -1,11 +1,12 @@
 package auth
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"strings"
+
+	"cloud.google.com/go/datastore"
 )
 
 type oauthError string
@@ -23,6 +24,8 @@ func Middleware() func(http.Handler) http.Handler {
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+
 			authorizationHeader := r.Header.Get("authorization")
 			if authorizationHeader == "" {
 				unauthorized(w, realm, invalidRequest, "missing authorization header")
@@ -33,19 +36,28 @@ func Middleware() func(http.Handler) http.Handler {
 				unauthorized(w, realm, invalidRequest, "invalid authorization header: %q", authorizationHeader)
 				return
 			}
-			var accessToken struct {
-				Sub string `json:"sub"`
-			}
-			if err := json.Unmarshal([]byte(bearerToken[1]), &accessToken); err != nil {
-				unauthorized(w, realm, invalidToken, "error parsing token: %v", err)
+
+			datastoreClient, err := datastore.NewClient(ctx, "")
+			if err != nil {
+				log.Printf("failed to create client: %v", err)
+				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			/*if !t.Valid {
-				unauthorized(w, realm, invalidToken, "Invalid authorization token: %v", t)
+
+			accessTokenString := bearerToken[1]
+			log.Printf("accessTokenString: %s", accessTokenString)
+
+			accessTokenKey := datastore.NameKey(accessTokenEntityKind, accessTokenString, nil)
+			var at accessToken
+			if err := datastoreClient.Get(ctx, accessTokenKey, &at); err == datastore.ErrNoSuchEntity {
+				unauthorized(w, realm, invalidToken, "unknown access token")
 				return
-			}*/
-			//context.Set(r, "decoded", token.Claims)
-			log.Printf("token: %v", accessToken)
+			} else if err != nil {
+				log.Printf("error looking up access token: %v", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
 			next.ServeHTTP(w, r)
 		})
 	}

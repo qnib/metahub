@@ -7,16 +7,16 @@ import (
 	"net/http"
 	"strings"
 
+	"cloud.google.com/go/datastore"
+
 	"golang.org/x/oauth2"
 	googleAuth "golang.org/x/oauth2/google"
 )
 
+var providerNameGoogle = "google"
+
 func googleHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-
-	/*{"code":"4/KwGtc043rxAVLiK4b24Qau8ET7x25V4HVlvo9Jb20704AC8lvdWdmSQwOvlXhcpgl6wvxqnfL1wc3qB9LltE__g",
-	"clientId":"936040293434-i3m9p4km8it5np2bs253a7rvedchofs6.apps.googleusercontent.com",
-	"redirectUri":"http://localhost:8081"}*/
 
 	decoder := json.NewDecoder(r.Body)
 	var body struct {
@@ -30,7 +30,6 @@ func googleHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	//log.Printf("code: %s", body.Code)
 
 	googleConfig := &oauth2.Config{
 		ClientID:     "936040293434-i3m9p4km8it5np2bs253a7rvedchofs6.apps.googleusercontent.com",
@@ -72,17 +71,6 @@ func googleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/*{
-	  "id": "112043567300478037431",
-	  "email": "robert.fujara@gmail.com",
-	  "verified_email": true,
-	  "name": "Robert Fujara",
-	  "given_name": "Robert",
-	  "family_name": "Fujara",
-	  "link": "https://plus.google.com/112043567300478037431",
-	  "picture": "https://lh4.googleusercontent.com/-2GeSbg8UaEc/AAAAAAAAAAI/AAAAAAABNnU/G8nvHyqrdx8/photo.jpg",
-	  "locale": "de"
-	}*/
 	userInfoReader := strings.NewReader(string(contents))
 	userInfoDecoder := json.NewDecoder(userInfoReader)
 	var userInfo struct {
@@ -96,6 +84,21 @@ func googleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	datastoreClient, err := datastore.NewClient(ctx, "")
+	if err != nil {
+		log.Printf("failed to create client: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if err := updateAccountAccess(ctx, datastoreClient, *token, userInfo.ID, account{
+		DisplayName: userInfo.Name,
+	}); err != nil {
+		log.Printf("error updating account: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	jwt, err := tokenToJSON(token)
 	if err != nil {
 		log.Printf("error creating JWT: %v", err)
@@ -103,7 +106,7 @@ func googleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Print(jwt)
+	//log.Print(jwt)
 
 	w.Write([]byte(jwt))
 }
