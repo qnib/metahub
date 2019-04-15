@@ -122,6 +122,7 @@ export default {
       this.showCredentials = false;
       this.showCredentialsForFeatureSet = undefined;
     },
+    // eslint-disable-next-line
     showEditDialog(featureSet) {
       this.editFeatureSet = true;
     },
