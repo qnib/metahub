@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-navigation-drawer v-model="drawer" fixed app>
+    <v-navigation-drawer v-model="drawer" app>
       <v-img :src="require('./assets/whales.jpg')"></v-img>
       <v-list>
         <v-subheader>MetaHub</v-subheader>
@@ -24,7 +24,7 @@
         <v-divider inset></v-divider>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar app fixed>
+    <v-toolbar app>
       <v-toolbar-side-icon large @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title class="headline">
         <span>Meta</span>
@@ -39,9 +39,7 @@
       </v-btn>
     </v-toolbar>
     <v-content>
-      <v-container align-center>
-        <router-view></router-view>
-      </v-container>
+      <router-view></router-view>
     </v-content>
     <LoginDialog @close="loginDialogClosed()" ref="login-dialog"/>
   </v-app>
