@@ -1,9 +1,13 @@
 <template>
-  <v-app>
+  <v-app style="background-color: white;">
     <v-navigation-drawer v-model="drawer" app>
-      <v-img :src="require('./assets/whales.jpg')"></v-img>
+      <v-toolbar>
+        <v-toolbar-title class="headline">
+          <span>Meta</span>
+          <span class="font-weight-light">Hub</span>
+        </v-toolbar-title>
+      </v-toolbar>
       <v-list>
-        <v-subheader>MetaHub</v-subheader>
         <v-list-tile avatar ripple to="/">
           <v-list-tile-avatar>
             <v-icon>dashboard</v-icon>
@@ -26,17 +30,17 @@
     </v-navigation-drawer>
     <v-toolbar app>
       <v-toolbar-side-icon large @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-      <v-toolbar-title class="headline">
-        <span>Meta</span>
-        <span class="font-weight-light">Hub</span>
-      </v-toolbar-title>
+      <v-toolbar-title class="headline">{{$route.meta.title}}</v-toolbar-title>
+      <router-view name="tools"></router-view>
       <v-spacer></v-spacer>
-      <v-btn v-if="!isAuthenticated" flat @click="loginClicked()">
-        <span>Sign In</span>
-      </v-btn>
-      <v-btn v-if="isAuthenticated" flat @click="logoutClicked()">
-        <span>Sign Out</span>
-      </v-btn>
+      <v-toolbar-items>
+        <v-btn v-if="!isAuthenticated" flat @click="loginClicked()">
+          <span>Sign In</span>
+        </v-btn>
+        <v-btn v-if="isAuthenticated" flat @click="logoutClicked()">
+          <span>Sign Out</span>
+        </v-btn>
+      </v-toolbar-items>
     </v-toolbar>
     <v-content>
       <router-view></router-view>

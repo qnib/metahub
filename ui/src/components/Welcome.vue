@@ -1,5 +1,5 @@
 <template>
-  <v-container>Welcome to MetaHub</v-container>
+  <v-container></v-container>
 </template>
 
 <script>

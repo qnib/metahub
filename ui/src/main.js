@@ -26,13 +26,24 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 import Welcome from "./components/Welcome";
-import FeatureSets from "./components/FeatureSets";
+import FeatureSetList from "./components/FeatureSetList";
 
 const router = new VueRouter({
   mode: 'hash',
   routes: [
-    { name: "welcome", path: '/', component: Welcome },
-    { path: '/featuresets', component: FeatureSets, meta: { requiresAuth: true } },
+    {
+      name: "welcome", path: '/', component: Welcome, meta: {
+        title: "Welcome",
+      }
+    },
+    {
+      path: '/featuresets', components: {
+        default: FeatureSetList,
+      }, meta: {
+        title: "Feature Sets",
+        requiresAuth: true,
+      }
+    },
   ]
 })
 
