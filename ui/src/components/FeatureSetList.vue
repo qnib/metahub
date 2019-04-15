@@ -26,13 +26,13 @@
               </v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-content>
-              <v-btn @click="showEngineCredentials(fs.id)" flat small color="primary">
+              <v-btn @click="showEngineCredentials(fs)" flat small color="primary">
                 Client Credentials&nbsp;
                 <v-icon>account_circle</v-icon>
               </v-btn>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-btn icon @click="editFeatureSet(fs.id)">
+              <v-btn icon @click="showEditDialog(fs)">
                 <v-icon color="blue">edit</v-icon>
               </v-btn>
             </v-list-tile-action>
@@ -45,6 +45,28 @@
         </template>
       </v-list>
     </v-container>
+    <v-dialog :value="showCredentials" persistent width="500">
+      <v-card>
+        <v-card-title primary-title>Registry Client Credentials</v-card-title>
+        <v-card-text>.............</v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="info" flat @click="hideEngineCredentials()">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog :value="editFeatureSet" persistent width="500">
+      <v-card>
+        <v-card-title primary-title>Edit Feature Set</v-card-title>
+        <v-card-text>.............</v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="info" flat @click="closeEditDialog()">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -53,7 +75,9 @@ export default {
   data() {
     return {
       featureSets: [],
-      loading: false
+      loading: false,
+      showCredentials: false,
+      editFeatureSet: false
     };
   },
   mounted() {
@@ -78,8 +102,6 @@ export default {
       this.loading--;
       this.featureSets.push(response.data);
     },
-    // eslint-disable-next-line
-    editFeatureSet(name) {},
     deleteFeatureSet(id) {
       this.loading++;
       this.axios
@@ -92,9 +114,21 @@ export default {
     featureRemoved() {
       this.loading--;
     },
-    showEngineCredentials(name) {
-      alert(name);
+    showEngineCredentials(featureSet) {
+      this.showCredentialsForFeatureSet = featureSet;
+      this.showCredentials = true;
+    },
+    hideEngineCredentials() {
+      this.showCredentials = false;
+      this.showCredentialsForFeatureSet = undefined;
+    },
+    showEditDialog(featureSet) {
+      this.editFeatureSet = true;
+    },
+    closeEditDialog() {
+      this.editFeatureSet = false;
     }
+    //editFeatureSetDialog
   }
 };
 </script>
