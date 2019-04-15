@@ -4,7 +4,8 @@ import (
 	"fmt"
 )
 
-var accountEntityKind = "account"
+// AccountEntityKind is the key name for the datsstore account entity
+var AccountEntityKind = "account"
 
 type account struct {
 	DisplayName string `datastore:"name,noindex"`

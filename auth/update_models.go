@@ -11,7 +11,7 @@ import (
 func updateAccountAccess(ctx context.Context, datastoreClient *datastore.Client, provider string, token oauth2.Token, userID string, a account) error {
 
 	accountName := getAccountName(provider, userID)
-	k := datastore.NameKey(accountEntityKind, accountName, nil)
+	k := datastore.NameKey(AccountEntityKind, accountName, nil)
 	var aa account
 	if err := datastoreClient.Get(ctx, k, &aa); err == datastore.ErrNoSuchEntity {
 		if _, err := datastoreClient.Put(ctx, k, &a); err != nil {

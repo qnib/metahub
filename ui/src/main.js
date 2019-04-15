@@ -26,13 +26,13 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 import Welcome from "./components/Welcome";
-import MachineTypes from "./components/MachineTypes";
+import FeatureSets from "./components/FeatureSets";
 
 const router = new VueRouter({
   mode: 'hash',
   routes: [
-    { path: '/', component: Welcome },
-    { path: '/machinetypes', component: MachineTypes, meta: { requiresAuth: true } },
+    { name: "welcome", path: '/', component: Welcome },
+    { path: '/featuresets', component: FeatureSets, meta: { requiresAuth: true } },
   ]
 })
 

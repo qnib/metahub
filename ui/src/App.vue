@@ -13,12 +13,12 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-divider inset></v-divider>
-        <v-list-tile avatar ripple to="/machinetypes">
+        <v-list-tile avatar ripple to="/featuresets">
           <v-list-tile-avatar>
             <v-icon>dashboard</v-icon>
           </v-list-tile-avatar>
           <v-list-tile-content>
-            <v-list-tile-title>Machine Types</v-list-tile-title>
+            <v-list-tile-title>Feature Sets</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
         <v-divider inset></v-divider>
@@ -70,6 +70,9 @@ export default {
     logoutClicked() {
       this.logout();
       this.isAuthenticated = this.isLoggedIn();
+      if (this.$route.meta.requiresAuth) {
+        this.$router.push({ name: "welcome" });
+      }
     }
   }
 };

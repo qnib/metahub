@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/datastore"
+	"github.com/gorilla/context"
 )
 
 type oauthError string
@@ -45,7 +46,7 @@ func Middleware() func(http.Handler) http.Handler {
 			}
 
 			accessTokenString := bearerToken[1]
-			log.Printf("accessTokenString: %s", accessTokenString)
+			//log.Printf("accessTokenString: %s", accessTokenString)
 
 			accessTokenKey := datastore.NameKey(accessTokenEntityKind, accessTokenString, nil)
 			var at accessToken
@@ -57,6 +58,10 @@ func Middleware() func(http.Handler) http.Handler {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
+
+			//TODO: check at.Expiry?
+
+			context.Set(r, "account", at.AccountName)
 
 			next.ServeHTTP(w, r)
 		})
