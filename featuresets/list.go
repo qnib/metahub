@@ -35,18 +35,16 @@ func list(w http.ResponseWriter, r *http.Request) {
 	}
 	//log.Printf("%d feature sets", len(featureSets))
 
-	type responseFeatureSet struct {
-		Name     string   `json:"name"`
-		Features []string `json:"features,omitempty"`
-	}
-
 	var responseData struct {
 		FeatureSets []responseFeatureSet `json:"featureSets,omitempty"`
 	}
 	for i, fs := range featureSets {
 		responseData.FeatureSets = append(responseData.FeatureSets, responseFeatureSet{
-			Name:     featureSetKeys[i].Name,
-			Features: fs.Features,
+			ID:          featureSetKeys[i].ID,
+			DisplayName: fs.DisplayName,
+			Features:    fs.Features,
+			Login:       fs.Login,
+			Password:    fs.Password,
 		})
 	}
 

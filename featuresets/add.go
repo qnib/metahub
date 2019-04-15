@@ -18,7 +18,8 @@ func add(w http.ResponseWriter, r *http.Request) {
 
 	decoder := json.NewDecoder(r.Body)
 	var requestParams struct {
-		Name string `json:"name"`
+		DisplayName string   `json:"name"`
+		Features    []string `json:"features"`
 	}
 	err := decoder.Decode(&requestParams)
 	if err != nil {
@@ -35,25 +36,29 @@ func add(w http.ResponseWriter, r *http.Request) {
 	}
 
 	accountKey := datastore.NameKey(auth.AccountEntityKind, accountName, nil)
-	featureSetKey := datastore.NameKey(featureSetEntityKind, requestParams.Name, accountKey)
+	featureSetKey := datastore.IncompleteKey(featureSetEntityKind, accountKey)
 
-	var fs featureSet
-	fs.Features = []string{
-		"gpu",
-		"bla",
+	fs := featureSet{
+		DisplayName: requestParams.DisplayName,
+		Features:    requestParams.Features,
+		Login:       "test test test",
+		Password:    "password",
 	}
-	if _, err := datastoreClient.Put(ctx, featureSetKey, &fs); err != nil {
+	featureSetKey, err = datastoreClient.Put(ctx, featureSetKey, &fs)
+	if err != nil {
 		log.Printf("error putting feature set: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	responseData := struct {
-		Name     string   `json:"name"`
-		Features []string `json:"features"`
-	}{
-		Name:     requestParams.Name,
-		Features: fs.Features,
+	log.Printf("featureSetKey: %v", featureSetKey)
+
+	responseData := responseFeatureSet{
+		ID:          featureSetKey.ID,
+		DisplayName: fs.DisplayName,
+		Features:    fs.Features,
+		Login:       fs.Login,
+		Password:    fs.Password,
 	}
 	d, err := json.Marshal(responseData)
 	if err != nil {
