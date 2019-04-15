@@ -33,7 +33,7 @@ func list(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	log.Printf("%d feature sets", len(featureSets))
+	//log.Printf("%d feature sets", len(featureSets))
 
 	type responseFeatureSet struct {
 		Name     string   `json:"name"`
