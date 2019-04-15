@@ -1,17 +1,17 @@
 <template>
-  <v-container pa-0 ma-0>
-    <v-container
-      ma-0
-      style="border-bottom-width: thin;
-    border-bottom-color: #E0E0E0;
-    border-bottom-style: solid;"
-    >
-      <v-btn @click="addNewFeature()" color="primary">
-        Add
-      </v-btn>
+  <v-container pl-0 pr-0>
+    <v-toolbar flat color="transparent" dense>
+      <v-btn @click="addNewFeature()" color="primary">Add</v-btn>
+      <v-spacer></v-spacer>
       <v-progress-circular v-if="loading>0" :indeterminate="true" style="float: right;"></v-progress-circular>
-    </v-container>
-    <v-container pt-0 pb-0 ma-0>
+    </v-toolbar>
+    <v-container
+      pa-2
+      mt-3
+      style="border-top-width: thin;
+    border-top-color: #E0E0E0;
+    border-top-style: solid;"
+    >
       <v-list two-line>
         <template v-for="(fs, index) in featureSets">
           <v-divider v-if="index>0" :key="'divider-'+fs.id"></v-divider>
