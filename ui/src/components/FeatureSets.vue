@@ -7,7 +7,7 @@
           <v-icon>add</v-icon>
         </v-btn>
       </v-subheader>
-      <v-progress-linear :active="loading" :indeterminate="true"></v-progress-linear>
+      <v-progress-linear :active="loading>0" :indeterminate="true"></v-progress-linear>
       <template v-for="(fs, index) in featureSets">
         <v-divider v-if="index>0" :key="'divider-'+fs.id"></v-divider>
         <v-list-tile :key="'list-tile-'+fs.id">
@@ -51,16 +51,16 @@ export default {
     };
   },
   mounted() {
-    this.loading = true;
+    this.loading++;
     this.axios.get("/featuresets/list").then(this.featuresReceived);
   },
   methods: {
     featuresReceived(response) {
-      this.loading = false;
+      this.loading--;
       this.featureSets = response.data.featureSets || [];
     },
     addNewFeature() {
-      this.loading = true;
+      this.loading++;
       this.axios
         .post("/featuresets/add", {
           name: "test123",
@@ -69,20 +69,22 @@ export default {
         .then(this.featureAdded);
     },
     featureAdded(response) {
-      this.loading = false;
+      this.loading--;
       this.featureSets.push(response.data);
     },
     // eslint-disable-next-line
     editFeatureSet(name) {},
     deleteFeatureSet(id) {
-      this.loading = true;
-      this.axios.post("/featuresets/delete", {
-        id: id
-      }).then(this.featureRemoved);
+      this.loading++;
+      this.axios
+        .post("/featuresets/delete", {
+          id: id
+        })
+        .then(this.featureRemoved);
       this.featureSets = this.featureSets.filter(fs => fs.id != id);
     },
     featureRemoved() {
-      this.loading = false;
+      this.loading--;
     },
     showEngineCredentials(name) {
       alert(name);
