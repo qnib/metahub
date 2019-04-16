@@ -25,12 +25,12 @@
                 </span>
               </v-list-tile-sub-title>
             </v-list-tile-content>
-            <v-list-tile-content>
+            <v-list-tile-action>
               <v-btn @click="showEngineCredentials(fs)" flat small color="primary">
                 Client Credentials&nbsp;
                 <v-icon>account_circle</v-icon>
               </v-btn>
-            </v-list-tile-content>
+            </v-list-tile-action>
             <v-list-tile-action>
               <v-btn icon @click="showEditDialog(fs)">
                 <v-icon color="blue">edit</v-icon>
