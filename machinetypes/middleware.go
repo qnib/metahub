@@ -37,6 +37,11 @@ func Middleware() func(http.Handler) http.Handler {
 			if _, ok := err.(*datastore.ErrFieldMismatch); ok {
 				err = nil
 			}
+			if err == datastore.ErrNoSuchEntity {
+				log.Printf("unknown login (machine type)")
+				unauthorized(w)
+				return
+			}
 			if err != nil {
 				log.Printf("error getting machine type: %v", err)
 				w.WriteHeader(http.StatusInternalServerError)
