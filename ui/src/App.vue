@@ -22,7 +22,7 @@
             <v-icon>dashboard</v-icon>
           </v-list-tile-avatar>
           <v-list-tile-content>
-            <v-list-tile-title>Feature Sets</v-list-tile-title>
+            <v-list-tile-title>Machine Types</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
         <v-divider inset></v-divider>

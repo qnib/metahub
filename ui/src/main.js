@@ -26,7 +26,7 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 import Welcome from "./components/Welcome";
-import FeatureSetList from "./components/FeatureSetList";
+import MachineTypes from "./components/MachineTypes";
 
 const router = new VueRouter({
   mode: 'hash',
@@ -38,9 +38,9 @@ const router = new VueRouter({
     },
     {
       path: '/featuresets', components: {
-        default: FeatureSetList,
+        default: MachineTypes,
       }, meta: {
-        title: "Feature Sets",
+        title: "Machine Types",
         requiresAuth: true,
       }
     },
