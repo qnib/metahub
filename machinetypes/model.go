@@ -1,8 +1,8 @@
-package featuresets
+package machinetypes
 
-var featureSetEntityKind = "feature_set"
+var machineTypeEntityKind = "MachineType"
 
-type featureSet struct {
+type machineType struct {
 	DisplayName string   `datastore:"name,noindex"`
 	Features    []string `datastore:"features,noindex"`
 	Login       string   `datastore:"login"`

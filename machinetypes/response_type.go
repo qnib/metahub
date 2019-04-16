@@ -1,6 +1,6 @@
-package featuresets
+package machinetypes
 
-type responseFeatureSet struct {
+type responseMachineType struct {
 	ID          int64    `json:"id"`
 	DisplayName string   `json:"name"`
 	Features    []string `json:"features,omitempty"`

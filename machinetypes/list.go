@@ -1,4 +1,4 @@
-package featuresets
+package machinetypes
 
 import (
 	"encoding/json"
@@ -24,10 +24,10 @@ func list(w http.ResponseWriter, r *http.Request) {
 	}
 
 	accountKey := datastore.NameKey(auth.AccountEntityKind, accountName, nil)
-	var featureSets []featureSet
-	q := datastore.NewQuery(featureSetEntityKind)
+	var machineTypes []machineType
+	q := datastore.NewQuery(machineTypeEntityKind)
 	q = q.Ancestor(accountKey)
-	featureSetKeys, err := datastoreClient.GetAll(ctx, q, &featureSets)
+	machineTypeKeys, err := datastoreClient.GetAll(ctx, q, &machineTypes)
 	if err != nil {
 		log.Printf("error querying feature sets: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -36,11 +36,11 @@ func list(w http.ResponseWriter, r *http.Request) {
 	//log.Printf("%d feature sets", len(featureSets))
 
 	var responseData struct {
-		FeatureSets []responseFeatureSet `json:"featureSets,omitempty"`
+		MachineTypes []responseMachineType `json:"machineTypes,omitempty"`
 	}
-	for i, fs := range featureSets {
-		responseData.FeatureSets = append(responseData.FeatureSets, responseFeatureSet{
-			ID:          featureSetKeys[i].ID,
+	for i, fs := range machineTypes {
+		responseData.MachineTypes = append(responseData.MachineTypes, responseMachineType{
+			ID:          machineTypeKeys[i].ID,
 			DisplayName: fs.DisplayName,
 			Features:    fs.Features,
 			Login:       fs.Login,

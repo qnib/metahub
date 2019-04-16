@@ -17,7 +17,7 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-divider inset></v-divider>
-        <v-list-tile avatar ripple to="/featuresets">
+        <v-list-tile avatar ripple to="/machinetypes">
           <v-list-tile-avatar>
             <v-icon>dashboard</v-icon>
           </v-list-tile-avatar>

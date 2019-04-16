@@ -1,4 +1,4 @@
-package featuresets
+package machinetypes
 
 import (
 	"encoding/json"
@@ -35,11 +35,11 @@ func delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	accountKey := datastore.NameKey(auth.AccountEntityKind, accountName, nil)
-	featureSetKey := datastore.IDKey(featureSetEntityKind, requestParams.ID, accountKey)
+	machineTypeKey := datastore.IDKey(machineTypeEntityKind, requestParams.ID, accountKey)
 
-	log.Printf("featureSetKey: %v", featureSetKey)
+	log.Printf("machineTypeKey: %v", machineTypeKey)
 
-	err = datastoreClient.Delete(ctx, featureSetKey)
+	err = datastoreClient.Delete(ctx, machineTypeKey)
 	if err != nil {
 		log.Printf("error deleting feature set: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)

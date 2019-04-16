@@ -1,4 +1,4 @@
-package featuresets
+package machinetypes
 
 import (
 	"encoding/json"
@@ -36,29 +36,29 @@ func add(w http.ResponseWriter, r *http.Request) {
 	}
 
 	accountKey := datastore.NameKey(auth.AccountEntityKind, accountName, nil)
-	featureSetKey := datastore.IncompleteKey(featureSetEntityKind, accountKey)
+	machineTypeKey := datastore.IncompleteKey(machineTypeEntityKind, accountKey)
 
-	fs := featureSet{
+	mt := machineType{
 		DisplayName: requestParams.DisplayName,
 		Features:    requestParams.Features,
 		Login:       "test test test",
 		Password:    "password",
 	}
-	featureSetKey, err = datastoreClient.Put(ctx, featureSetKey, &fs)
+	machineTypeKey, err = datastoreClient.Put(ctx, machineTypeKey, &mt)
 	if err != nil {
 		log.Printf("error putting feature set: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	log.Printf("featureSetKey: %v", featureSetKey)
+	log.Printf("machineTypeKey: %v", machineTypeKey)
 
-	responseData := responseFeatureSet{
-		ID:          featureSetKey.ID,
-		DisplayName: fs.DisplayName,
-		Features:    fs.Features,
-		Login:       fs.Login,
-		Password:    fs.Password,
+	responseData := responseMachineType{
+		ID:          machineTypeKey.ID,
+		DisplayName: mt.DisplayName,
+		Features:    mt.Features,
+		Login:       mt.Login,
+		Password:    mt.Password,
 	}
 	d, err := json.Marshal(responseData)
 	if err != nil {

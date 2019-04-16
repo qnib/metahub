@@ -163,7 +163,7 @@ export default {
   },
   mounted() {
     this.loading++;
-    this.axios.get("/featuresets/list").then(this.featuresReceived);
+    this.axios.get("/machinetypes/list").then(this.featuresReceived);
   },
   methods: {
     featuresReceived(response) {
@@ -173,7 +173,7 @@ export default {
     deleteMachineType(id) {
       this.loading++;
       this.axios
-        .post("/featuresets/delete", {
+        .post("/machinetypes/delete", {
           id: id
         })
         .then(this.machineTypeRemoved);
@@ -229,7 +229,7 @@ export default {
       this.newDialog = false;
       this.loading++;
       this.axios
-        .post("/featuresets/add", this.selection)
+        .post("/machinetypes/add", this.selection)
         .then(this.machineTypeAdded);
     },
     machineTypeAdded(response) {

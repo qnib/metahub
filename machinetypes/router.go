@@ -1,4 +1,4 @@
-package featuresets
+package machinetypes
 
 import (
 	"net/http"

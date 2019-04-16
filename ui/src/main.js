@@ -37,7 +37,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: '/featuresets', components: {
+      path: '/machinetypes', components: {
         default: MachineTypes,
       }, meta: {
         title: "Machine Types",
