@@ -38,11 +38,17 @@ func add(w http.ResponseWriter, r *http.Request) {
 	accountKey := datastore.NameKey(auth.AccountEntityKind, accountName, nil)
 	machineTypeKey := datastore.IncompleteKey(machineTypeEntityKind, accountKey)
 
+	newPassword, err := generateLoginPassword()
+	if err != nil {
+		log.Printf("failed to generate new password: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	mt := machineType{
 		DisplayName: requestParams.DisplayName,
 		Features:    requestParams.Features,
-		Login:       "test test test",
-		Password:    "password",
+		Password:    newPassword,
 	}
 	machineTypeKey, err = datastoreClient.Put(ctx, machineTypeKey, &mt)
 	if err != nil {
@@ -57,7 +63,7 @@ func add(w http.ResponseWriter, r *http.Request) {
 		ID:          machineTypeKey.ID,
 		DisplayName: mt.DisplayName,
 		Features:    mt.Features,
-		Login:       mt.Login,
+		Login:       machineTypeKey.String(),
 		Password:    mt.Password,
 	}
 	d, err := json.Marshal(responseData)

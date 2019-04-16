@@ -41,6 +41,9 @@ func update(w http.ResponseWriter, r *http.Request) {
 
 	var mt machineType
 	err = datastoreClient.Get(ctx, machineTypeKey, &mt)
+	if _, ok := err.(*datastore.ErrFieldMismatch); ok {
+		err = nil
+	}
 	if err != nil {
 		log.Printf("error getting machine type: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -61,7 +64,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 		ID:          machineTypeKey.ID,
 		DisplayName: mt.DisplayName,
 		Features:    mt.Features,
-		Login:       mt.Login,
+		Login:       machineTypeKey.String(),
 		Password:    mt.Password,
 	}
 	d, err := json.Marshal(responseData)

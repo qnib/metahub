@@ -27,7 +27,7 @@
             </v-list-tile-content>
             <v-list-tile-action>
               <v-btn @click="showEngineCredentials(fs)" flat small color="primary">
-                Client Credentials&nbsp;
+                <span class="hidden-md-and-down">Client&nbsp;</span>Credentials&nbsp;
                 <v-icon>account_circle</v-icon>
               </v-btn>
             </v-list-tile-action>
@@ -45,10 +45,26 @@
         </template>
       </v-list>
     </v-container>
-    <v-dialog :value="credentialsDialog" persistent width="500">
+    <v-dialog :value="credentialsDialog" persistent width="650">
       <v-card>
-        <v-card-title primary-title>Registry Client Credentials</v-card-title>
-        <v-card-text>.............</v-card-text>
+        <v-card-title primary-title class="headline">Client Credentials</v-card-title>
+        <v-card-text>
+          <v-container grid-list-md>
+            <v-flex xs12>
+              <v-text-field label="Login" v-model="selection.login" readonly></v-text-field>
+            </v-flex>
+            <v-flex xs12>
+              <v-text-field
+                label="Password"
+                v-model="selection.password"
+                readonly
+                :append-icon="showCredentialsPassword ? 'visibility' : 'visibility_off'"
+                @click:append="showCredentialsPassword = !showCredentialsPassword"
+                :type="showCredentialsPassword ? 'text' : 'password'"
+              ></v-text-field>
+            </v-flex>
+          </v-container>
+        </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -150,6 +166,7 @@ export default {
       machineTypes: [],
       loading: false,
       credentialsDialog: false,
+      showCredentialsPassword: false,
       editDialog: false,
       newDialog: false,
       selection: {},
@@ -184,6 +201,7 @@ export default {
       this.loading--;
     },
     showEngineCredentials(machineType) {
+      this.showCredentialsPassword = false;
       this.selection = machineType;
       this.credentialsDialog = true;
     },
@@ -229,6 +247,9 @@ export default {
     },
     machineTypeUpdated(response) {
       this.loading--;
+      if (response.status != 200) {
+        alert(response);
+      }
     },
     showNewDialog() {
       this.selection = {
@@ -250,6 +271,10 @@ export default {
     },
     machineTypeAdded(response) {
       this.loading--;
+      if (response.status != 200) {
+        alert(response);
+        return;
+      }
       this.machineTypes.push(response.data);
     }
   }

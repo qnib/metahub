@@ -28,6 +28,9 @@ func list(w http.ResponseWriter, r *http.Request) {
 	q := datastore.NewQuery(machineTypeEntityKind)
 	q = q.Ancestor(accountKey)
 	machineTypeKeys, err := datastoreClient.GetAll(ctx, q, &machineTypes)
+	if _, ok := err.(*datastore.ErrFieldMismatch); ok {
+		err = nil
+	}
 	if err != nil {
 		log.Printf("error querying feature sets: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -39,11 +42,12 @@ func list(w http.ResponseWriter, r *http.Request) {
 		MachineTypes []responseMachineType `json:"machineTypes,omitempty"`
 	}
 	for i, fs := range machineTypes {
+		k := machineTypeKeys[i]
 		responseData.MachineTypes = append(responseData.MachineTypes, responseMachineType{
-			ID:          machineTypeKeys[i].ID,
+			ID:          k.ID,
 			DisplayName: fs.DisplayName,
 			Features:    fs.Features,
-			Login:       fs.Login,
+			Login:       k.String(),
 			Password:    fs.Password,
 		})
 	}
