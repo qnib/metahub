@@ -209,7 +209,7 @@ export default {
       this.newFeatureName = "";
     },
     showEditDialog(machineType) {
-      this.selection = machineType;
+      this.selection = JSON.parse(JSON.stringify(machineType));
       this.editDialog = true;
     },
     closeEditDialog() {
@@ -221,6 +221,11 @@ export default {
       this.axios
         .post("/machinetypes/update", this.selection)
         .then(this.machineTypeUpdated);
+      for (var i = 0; i < this.machineTypes.length; i++) {
+        if (this.machineTypes[i].id == this.selection.id) {
+          this.machineTypes[i] = this.selection;
+        }
+      }
     },
     machineTypeUpdated(response) {
       this.loading--;
