@@ -58,8 +58,26 @@
     </v-dialog>
     <v-dialog :value="editDialog" persistent width="500">
       <v-card>
-        <v-card-title primary-title>Edit Machine Type</v-card-title>
-        <v-card-text>.............</v-card-text>
+        <v-card-title primary-title class="headline">Edit Machine Type</v-card-title>
+          <v-container grid-list-md>
+            <v-flex xs12>
+              <v-text-field label="Name" v-model="selection.name" required></v-text-field>
+            </v-flex>
+            <v-flex xs12>
+              <v-text-field
+                label="Features"
+                placeholder="Name"
+                v-model="newFeatureName"
+                @change="addFeature()"
+              ></v-text-field>
+              <v-chip
+                v-for="(f,i) in selection.features"
+                :key="i"
+                close
+                @input="removeFeature(f)"
+              >{{f}}</v-chip>
+            </v-flex>
+          </v-container>
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -78,7 +96,7 @@
             <v-flex xs12>
               <v-text-field
                 label="Features"
-                placeholder="Add Name"
+                placeholder="Name"
                 v-model="newFeatureName"
                 @change="addFeature()"
               ></v-text-field>
@@ -91,6 +109,7 @@
             </v-flex>
           </v-container>
         </v-card-text>
+        <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="info" flat @click="cancelNewDialog()">Close</v-btn>
