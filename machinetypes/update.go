@@ -11,13 +11,14 @@ import (
 	"github.com/gorilla/context"
 )
 
-func add(w http.ResponseWriter, r *http.Request) {
+func update(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	accountName := context.Get(r, "account").(string)
 
 	decoder := json.NewDecoder(r.Body)
 	var requestParams struct {
+		ID          int64    `json:"id"`
 		DisplayName string   `json:"name"`
 		Features    []string `json:"features"`
 	}
@@ -36,22 +37,25 @@ func add(w http.ResponseWriter, r *http.Request) {
 	}
 
 	accountKey := datastore.NameKey(auth.AccountEntityKind, accountName, nil)
-	machineTypeKey := datastore.IncompleteKey(machineTypeEntityKind, accountKey)
+	machineTypeKey := datastore.IDKey(machineTypeEntityKind, requestParams.ID, accountKey)
 
-	mt := machineType{
-		DisplayName: requestParams.DisplayName,
-		Features:    requestParams.Features,
-		Login:       "test test test",
-		Password:    "password",
+	var mt machineType
+	err = datastoreClient.Get(ctx, machineTypeKey, &mt)
+	if err != nil {
+		log.Printf("error getting machine type: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
+
+	mt.DisplayName = requestParams.DisplayName
+	mt.Features = requestParams.Features
+
 	machineTypeKey, err = datastoreClient.Put(ctx, machineTypeKey, &mt)
 	if err != nil {
 		log.Printf("error putting machine type: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
-	log.Printf("machineTypeKey: %v", machineTypeKey)
 
 	responseData := responseMachineType{
 		ID:          machineTypeKey.ID,

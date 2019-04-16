@@ -50,7 +50,7 @@ func list(w http.ResponseWriter, r *http.Request) {
 
 	d, err := json.Marshal(responseData)
 	if err != nil {
-		log.Printf("error marshaling feature set: %v", err)
+		log.Printf("error marshaling response data: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
