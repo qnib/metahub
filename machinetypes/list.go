@@ -47,7 +47,7 @@ func list(w http.ResponseWriter, r *http.Request) {
 			ID:          k.ID,
 			DisplayName: fs.DisplayName,
 			Features:    fs.Features,
-			Login:       k.String(),
+			Login:       k.Encode(),
 			Password:    fs.Password,
 		})
 	}

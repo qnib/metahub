@@ -2,13 +2,11 @@ package registry
 
 import (
 	"fmt"
+	"metahub/machinetypes"
 	"net/http"
 
 	"metahub/environment"
 
-	basicAuth "github.com/99designs/basicauth-go"
-	manifestListSchema "github.com/docker/distribution/manifest/manifestlist"
-	manifestSchema "github.com/docker/distribution/manifest/schema2"
 	"github.com/docker/distribution/reference"
 	"github.com/gorilla/mux"
 )
@@ -17,27 +15,13 @@ type registry struct {
 	env environment.Environment
 }
 
-var authMiddleware func(http.Handler) http.Handler
-
-func init() {
-	_ = manifestListSchema.SchemaVersion
-	_ = manifestSchema.SchemaVersion
-
-	authMiddleware = basicAuth.New("MetaHub", map[string][]string{
-		"test1":  {"test1"},
-		"test2":  {"test2"},
-		"test3":  {"test3"},
-		"test12": {"test12"},
-	})
-}
-
 // NewRouter returns a router for the registry API endpoints
 func NewRouter(env environment.Environment, pathPrefix string) http.Handler {
 	reg := registry{
 		env: env,
 	}
 	router := mux.NewRouter()
-	router.Use(authMiddleware)
+	router.Use(machinetypes.Middleware())
 	router.HandleFunc(pathPrefix+"/{image}/manifests/{reference}", reg.manifestsHandler).Methods("GET")
 	router.HandleFunc(pathPrefix+"/{repo}/{image}/manifests/{reference}", reg.manifestsHandler).Methods("GET")
 	router.HandleFunc(pathPrefix+"/{image}/blobs/{reference}", reg.blobsHandler).Methods("GET")

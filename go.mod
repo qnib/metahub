@@ -4,8 +4,6 @@ go 1.12
 
 require (
 	cloud.google.com/go v0.37.4
-	github.com/99designs/basicauth-go v0.0.0-20160802081356-2a93ba0f464d
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/docker/distribution v2.7.0+incompatible
 	github.com/docker/go-metrics v0.0.0-20181218153428-b84716841b82 // indirect
 	github.com/docker/libtrust v0.0.0-20160708172513-aabc10ec26b7 // indirect

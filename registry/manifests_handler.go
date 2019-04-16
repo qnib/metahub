@@ -5,8 +5,11 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/context"
+
 	"github.com/docker/distribution"
 	manifestListSchema "github.com/docker/distribution/manifest/manifestlist"
+	manifestSchema "github.com/docker/distribution/manifest/schema2"
 	registryClient "github.com/docker/distribution/registry/client"
 	"github.com/gorilla/mux"
 	digestLib "github.com/opencontainers/go-digest"
@@ -14,6 +17,11 @@ import (
 
 // https://docs.docker.com/registry/spec/manifest-v2-2/#image-manifest-field-descriptions
 // https://docs.docker.com/registry/spec/api/#digest-parameter
+
+func init() {
+	_ = manifestListSchema.SchemaVersion
+	_ = manifestSchema.SchemaVersion
+}
 
 func (reg registry) manifestsHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -94,23 +102,37 @@ func (reg registry) manifestsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func filterManifestsFromList(r *http.Request, manifestList *manifestListSchema.DeserializedManifestList) (*manifestListSchema.DeserializedManifestList, error) {
+	machineFeatureList := context.Get(r, "features").([]string)
+	log.Printf("machine type features: %v", machineFeatureList)
 
-	username, _, _ := r.BasicAuth()
-
-	for i, m := range manifestList.Manifests {
-		/*if m.Platform.OS != "windows" || m.Platform.Architecture != "amd64" {
-			continue
-		}*/
-		if len(m.Platform.Features) != 1 {
-			continue
-		}
-		if m.Platform.Features[0] != username {
-			continue
-		}
-		log.Printf("Platform: %v", m.Platform)
-		manifestList.Manifests[i] = m
+	machineFeatureSet := make(map[string]struct{}, 0)
+	for _, f := range machineFeatureList {
+		machineFeatureSet[f] = struct{}{}
 	}
-	newManifestList, err := manifestListSchema.FromDescriptors(manifestList.Manifests)
+
+	filteredManifests := make([]manifestListSchema.ManifestDescriptor, 0)
+
+	for _, m := range manifestList.Manifests {
+		if len(m.Platform.Features) != len(machineFeatureSet) {
+			log.Printf("skipping manifest features %v", m.Platform.Features)
+			continue
+		}
+		featureMismatch := false
+		for i := 0; i < len(machineFeatureSet); i++ {
+			platformFeature := m.Platform.Features[i]
+			if _, ok := machineFeatureSet[platformFeature]; !ok {
+				featureMismatch = true
+				break
+			}
+		}
+		if featureMismatch {
+			log.Printf("skipping manifest features %v", m.Platform.Features)
+			continue
+		}
+		log.Printf("allow manifest features %v", m.Platform.Features)
+		filteredManifests = append(filteredManifests, m)
+	}
+	newManifestList, err := manifestListSchema.FromDescriptors(filteredManifests)
 	if err != nil {
 		return nil, fmt.Errorf("error generating new manifest list: %v", err)
 	}

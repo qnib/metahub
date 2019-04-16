@@ -64,7 +64,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 		ID:          machineTypeKey.ID,
 		DisplayName: mt.DisplayName,
 		Features:    mt.Features,
-		Login:       machineTypeKey.String(),
+		Login:       machineTypeKey.Encode(),
 		Password:    mt.Password,
 	}
 	d, err := json.Marshal(responseData)
