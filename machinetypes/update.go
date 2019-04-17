@@ -3,75 +3,51 @@ package machinetypes
 import (
 	"encoding/json"
 	"log"
-	"metahub/auth"
+	"metahub"
+	"metahub/storage"
 	"net/http"
-
-	"cloud.google.com/go/datastore"
 
 	"github.com/gorilla/context"
 )
 
-func update(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+func getUpdateHandler(env metahub.Environment) http.Handler {
+	storageService := env.Storage()
 
-	accountName := context.Get(r, "account").(string)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 
-	decoder := json.NewDecoder(r.Body)
-	var requestParams struct {
-		ID          int64    `json:"id"`
-		DisplayName string   `json:"name"`
-		Features    []string `json:"features"`
-	}
-	err := decoder.Decode(&requestParams)
-	if err != nil {
-		log.Printf("error decoding request data: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+		accountName := context.Get(r, "account").(string)
 
-	datastoreClient, err := datastore.NewClient(ctx, "")
-	if err != nil {
-		log.Printf("failed to create client: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+		decoder := json.NewDecoder(r.Body)
+		var requestParams struct {
+			ID          int64    `json:"id"`
+			DisplayName string   `json:"name"`
+			Features    []string `json:"features"`
+		}
+		err := decoder.Decode(&requestParams)
+		if err != nil {
+			log.Printf("error decoding request data: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	accountKey := datastore.NameKey(auth.AccountEntityKind, accountName, nil)
-	machineTypeKey := datastore.IDKey(machineTypeEntityKind, requestParams.ID, accountKey)
+		machineTypeService, err := storageService.MachineTypeService(ctx)
+		if err != nil {
+			log.Printf("failed to create MachineTypeService: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	var mt machineType
-	err = datastoreClient.Get(ctx, machineTypeKey, &mt)
-	if _, ok := err.(*datastore.ErrFieldMismatch); ok {
-		err = nil
-	}
-	if err != nil {
-		log.Printf("error getting machine type: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+		mt := storage.MachineType{
+			ID:          requestParams.ID,
+			DisplayName: requestParams.DisplayName,
+			Features:    requestParams.Features,
+		}
 
-	mt.DisplayName = requestParams.DisplayName
-	mt.Features = requestParams.Features
-
-	machineTypeKey, err = datastoreClient.Put(ctx, machineTypeKey, &mt)
-	if err != nil {
-		log.Printf("error putting machine type: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	responseData := responseMachineType{
-		ID:          machineTypeKey.ID,
-		DisplayName: mt.DisplayName,
-		Features:    mt.Features,
-		Login:       machineTypeKey.Encode(),
-		Password:    mt.Password,
-	}
-	d, err := json.Marshal(responseData)
-	if err != nil {
-		log.Printf("error marshaling response data: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.Write(d)
+		if err := machineTypeService.Update(accountName, mt); err != nil {
+			log.Printf("failed updating machine type: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	})
 }

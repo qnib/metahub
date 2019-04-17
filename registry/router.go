@@ -5,23 +5,23 @@ import (
 	"metahub/machinetypes"
 	"net/http"
 
-	"metahub/environment"
+	"metahub"
 
 	"github.com/docker/distribution/reference"
 	"github.com/gorilla/mux"
 )
 
 type registry struct {
-	env environment.Environment
+	env metahub.Environment
 }
 
 // NewRouter returns a router for the registry API endpoints
-func NewRouter(env environment.Environment, pathPrefix string) http.Handler {
+func NewRouter(env metahub.Environment, pathPrefix string) http.Handler {
 	reg := registry{
 		env: env,
 	}
 	router := mux.NewRouter()
-	router.Use(machinetypes.Middleware())
+	router.Use(machinetypes.Middleware(env))
 	router.HandleFunc(pathPrefix+"/{image}/manifests/{reference}", reg.manifestsHandler).Methods("GET")
 	router.HandleFunc(pathPrefix+"/{repo}/{image}/manifests/{reference}", reg.manifestsHandler).Methods("GET")
 	router.HandleFunc(pathPrefix+"/{image}/blobs/{reference}", reg.blobsHandler).Methods("GET")

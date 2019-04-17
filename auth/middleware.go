@@ -3,10 +3,10 @@ package auth
 import (
 	"fmt"
 	"log"
+	"metahub"
 	"net/http"
 	"strings"
 
-	"cloud.google.com/go/datastore"
 	"github.com/gorilla/context"
 )
 
@@ -19,7 +19,8 @@ var (
 )
 
 // Middleware checks user
-func Middleware() func(http.Handler) http.Handler {
+func Middleware(env metahub.Environment) func(http.Handler) http.Handler {
+	storage := env.Storage()
 
 	realm := "MetaHub"
 
@@ -37,29 +38,26 @@ func Middleware() func(http.Handler) http.Handler {
 				unauthorized(w, realm, invalidRequest, "invalid authorization header: %q", authorizationHeader)
 				return
 			}
+			accessTokenString := bearerToken[1]
 
-			datastoreClient, err := datastore.NewClient(ctx, "")
+			accessTokenService, err := storage.AccessTokenService(ctx)
 			if err != nil {
-				log.Printf("failed to create client: %v", err)
+				log.Printf("failed to create AccessTokenService: %v", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 
-			accessTokenString := bearerToken[1]
-			//log.Printf("accessTokenString: %s", accessTokenString)
-
-			accessTokenKey := datastore.NameKey(accessTokenEntityKind, accessTokenString, nil)
-			var at accessToken
-			if err := datastoreClient.Get(ctx, accessTokenKey, &at); err == datastore.ErrNoSuchEntity {
+			at, err := accessTokenService.Get(accessTokenString)
+			if err != nil {
+				log.Printf("error getting access token: %v", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			if at == nil {
+				log.Printf("unknown access token")
 				unauthorized(w, realm, invalidToken, "unknown access token")
 				return
-			} else if err != nil {
-				log.Printf("error looking up access token: %v", err)
-				w.WriteHeader(http.StatusInternalServerError)
-				return
 			}
-
-			//TODO: check at.Expiry?
 
 			context.Set(r, "account", at.AccountName)
 

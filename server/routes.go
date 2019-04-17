@@ -1,7 +1,7 @@
-package routes
+package server
 
 import (
-	"metahub/environment"
+	"metahub"
 	"net/http"
 
 	"metahub/auth"
@@ -9,13 +9,13 @@ import (
 	"metahub/registry"
 )
 
-// Register registers handlers/routers
-func Register(env environment.Environment) {
+// RegisterRoutes registers handlers/routers
+func RegisterRoutes(env metahub.Environment) {
 	handleRouter(env, "/v2", registry.NewRouter)
 	handleRouter(env, "/auth", auth.NewRouter)
 	handleRouter(env, "/machinetypes", machinetypes.NewRouter)
 }
 
-func handleRouter(env environment.Environment, prefix string, h func(env environment.Environment, prefix string) http.Handler) {
+func handleRouter(env metahub.Environment, prefix string, h func(env metahub.Environment, prefix string) http.Handler) {
 	http.Handle(prefix+"/", h(env, prefix))
 }

@@ -3,60 +3,49 @@ package machinetypes
 import (
 	"encoding/json"
 	"log"
-	"metahub/auth"
+	"metahub"
+	"metahub/storage"
 	"net/http"
-
-	"cloud.google.com/go/datastore"
 
 	"github.com/gorilla/context"
 )
 
-func list(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+func getListHandler(env metahub.Environment) http.Handler {
+	storageService := env.Storage()
 
-	accountName := context.Get(r, "account").(string)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 
-	datastoreClient, err := datastore.NewClient(ctx, "")
-	if err != nil {
-		log.Printf("failed to create client: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+		accountName := context.Get(r, "account").(string)
 
-	accountKey := datastore.NameKey(auth.AccountEntityKind, accountName, nil)
-	var machineTypes []machineType
-	q := datastore.NewQuery(machineTypeEntityKind)
-	q = q.Ancestor(accountKey)
-	machineTypeKeys, err := datastoreClient.GetAll(ctx, q, &machineTypes)
-	if _, ok := err.(*datastore.ErrFieldMismatch); ok {
-		err = nil
-	}
-	if err != nil {
-		log.Printf("error querying feature sets: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	//log.Printf("%d feature sets", len(featureSets))
+		machineTypeService, err := storageService.MachineTypeService(ctx)
+		if err != nil {
+			log.Printf("failed to create MachineTypeService: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	var responseData struct {
-		MachineTypes []responseMachineType `json:"machineTypes,omitempty"`
-	}
-	for i, fs := range machineTypes {
-		k := machineTypeKeys[i]
-		responseData.MachineTypes = append(responseData.MachineTypes, responseMachineType{
-			ID:          k.ID,
-			DisplayName: fs.DisplayName,
-			Features:    fs.Features,
-			Login:       k.Encode(),
-			Password:    fs.Password,
-		})
-	}
+		machineTypes, err := machineTypeService.List(accountName)
+		if err != nil {
+			log.Printf("error querying machine types: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		//log.Printf("%d feature sets", len(featureSets))
 
-	d, err := json.Marshal(responseData)
-	if err != nil {
-		log.Printf("error marshaling response data: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.Write(d)
+		response := struct {
+			MachineTypes []storage.MachineType `json:"machineTypes,omitempty"`
+		}{
+			MachineTypes: machineTypes,
+		}
+
+		d, err := json.Marshal(response)
+		if err != nil {
+			log.Printf("error marshaling response data: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.Write(d)
+
+	})
 }

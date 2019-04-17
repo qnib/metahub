@@ -3,74 +3,66 @@ package machinetypes
 import (
 	"encoding/json"
 	"log"
-	"metahub/auth"
+	"metahub"
 	"net/http"
 
-	"cloud.google.com/go/datastore"
+	"metahub/storage"
 
 	"github.com/gorilla/context"
 )
 
-func add(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+func getAddHandler(env metahub.Environment) http.Handler {
+	storageService := env.Storage()
 
-	accountName := context.Get(r, "account").(string)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 
-	decoder := json.NewDecoder(r.Body)
-	var requestParams struct {
-		DisplayName string   `json:"name"`
-		Features    []string `json:"features"`
-	}
-	err := decoder.Decode(&requestParams)
-	if err != nil {
-		log.Printf("error decoding request data: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+		accountName := context.Get(r, "account").(string)
 
-	datastoreClient, err := datastore.NewClient(ctx, "")
-	if err != nil {
-		log.Printf("failed to create client: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+		decoder := json.NewDecoder(r.Body)
+		var requestParams struct {
+			DisplayName string   `json:"name"`
+			Features    []string `json:"features"`
+		}
+		err := decoder.Decode(&requestParams)
+		if err != nil {
+			log.Printf("error decoding request data: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	accountKey := datastore.NameKey(auth.AccountEntityKind, accountName, nil)
-	machineTypeKey := datastore.IncompleteKey(machineTypeEntityKind, accountKey)
+		machineTypeService, err := storageService.MachineTypeService(ctx)
+		if err != nil {
+			log.Printf("failed to create MachineTypeService: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	newPassword, err := generateLoginPassword()
-	if err != nil {
-		log.Printf("failed to generate new password: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+		newPassword, err := generateLoginPassword()
+		if err != nil {
+			log.Printf("failed to generate new password: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	mt := machineType{
-		DisplayName: requestParams.DisplayName,
-		Features:    requestParams.Features,
-		Password:    newPassword,
-	}
-	machineTypeKey, err = datastoreClient.Put(ctx, machineTypeKey, &mt)
-	if err != nil {
-		log.Printf("error putting machine type: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+		mt := storage.MachineType{
+			DisplayName: requestParams.DisplayName,
+			Features:    requestParams.Features,
+			Password:    newPassword,
+		}
 
-	log.Printf("machineTypeKey: %v", machineTypeKey)
+		if err := machineTypeService.Add(accountName, &mt); err != nil {
+			log.Printf("failed adding machine type: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	responseData := responseMachineType{
-		ID:          machineTypeKey.ID,
-		DisplayName: mt.DisplayName,
-		Features:    mt.Features,
-		Login:       machineTypeKey.Encode(),
-		Password:    mt.Password,
-	}
-	d, err := json.Marshal(responseData)
-	if err != nil {
-		log.Printf("error marshaling response data: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.Write(d)
+		d, err := json.Marshal(mt)
+		if err != nil {
+			log.Printf("error marshaling response data: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.Write(d)
+	})
 }

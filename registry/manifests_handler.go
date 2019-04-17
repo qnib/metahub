@@ -3,6 +3,7 @@ package registry
 import (
 	"fmt"
 	"log"
+	"metahub/storage"
 	"net/http"
 
 	"github.com/gorilla/context"
@@ -102,11 +103,11 @@ func (reg registry) manifestsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func filterManifestsFromList(r *http.Request, manifestList *manifestListSchema.DeserializedManifestList) (*manifestListSchema.DeserializedManifestList, error) {
-	machineFeatureList := context.Get(r, "features").([]string)
-	log.Printf("machine type features: %v", machineFeatureList)
+	machineType := context.Get(r, "machineType").(storage.MachineType)
+	log.Printf("machine type features: %v", machineType.Features)
 
 	machineFeatureSet := make(map[string]struct{}, 0)
-	for _, f := range machineFeatureList {
+	for _, f := range machineType.Features {
 		machineFeatureSet[f] = struct{}{}
 	}
 

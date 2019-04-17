@@ -3,46 +3,42 @@ package machinetypes
 import (
 	"encoding/json"
 	"log"
-	"metahub/auth"
+	"metahub"
 	"net/http"
-
-	"cloud.google.com/go/datastore"
 
 	"github.com/gorilla/context"
 )
 
-func delete(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+func getDeleteHandler(env metahub.Environment) http.Handler {
+	storageService := env.Storage()
 
-	accountName := context.Get(r, "account").(string)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 
-	decoder := json.NewDecoder(r.Body)
-	var requestParams struct {
-		ID int64 `json:"id"`
-	}
-	err := decoder.Decode(&requestParams)
-	if err != nil {
-		log.Printf("error decoding request data: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+		accountName := context.Get(r, "account").(string)
 
-	datastoreClient, err := datastore.NewClient(ctx, "")
-	if err != nil {
-		log.Printf("failed to create client: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+		decoder := json.NewDecoder(r.Body)
+		var requestParams struct {
+			ID int64 `json:"id"`
+		}
+		err := decoder.Decode(&requestParams)
+		if err != nil {
+			log.Printf("error decoding request data: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	accountKey := datastore.NameKey(auth.AccountEntityKind, accountName, nil)
-	machineTypeKey := datastore.IDKey(machineTypeEntityKind, requestParams.ID, accountKey)
+		machineTypeService, err := storageService.MachineTypeService(ctx)
+		if err != nil {
+			log.Printf("failed to create MachineTypeService: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	log.Printf("machineTypeKey: %v", machineTypeKey)
-
-	err = datastoreClient.Delete(ctx, machineTypeKey)
-	if err != nil {
-		log.Printf("error deleting feature set: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+		if err := machineTypeService.Delete(accountName, requestParams.ID); err != nil {
+			log.Printf("failed deleting machine type: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	})
 }

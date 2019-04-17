@@ -3,10 +3,12 @@ package main
 import (
 	"fmt"
 	"log"
+	"metahub"
+	"metahub/storage/clouddatastore"
 	"net/http"
 	"os"
 
-	"metahub/routes"
+	"metahub/server"
 )
 
 func main() {
@@ -15,11 +17,10 @@ func main() {
 		port = "8080"
 	}
 
-	env := gaeEnv{}
-	routes.Register(&env)
+	storageService := clouddatastore.NewService()
+	env := metahub.NewEnvironment(storageService)
+
+	server.RegisterRoutes(env)
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
-}
-
-type gaeEnv struct {
 }

@@ -3,15 +3,15 @@ package machinetypes
 import (
 	"fmt"
 	"log"
+	"metahub"
 	"net/http"
 
 	"github.com/gorilla/context"
-
-	"cloud.google.com/go/datastore"
 )
 
 // Middleware checks machine type credentials
-func Middleware() func(http.Handler) http.Handler {
+func Middleware(env metahub.Environment) func(http.Handler) http.Handler {
+	storage := env.Storage()
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -19,32 +19,26 @@ func Middleware() func(http.Handler) http.Handler {
 
 			username, password, ok := r.BasicAuth()
 			if !ok {
-				//log.Printf("missing basic auth")
 				unauthorized(w)
 				return
 			}
 
-			datastoreClient, err := datastore.NewClient(ctx, "")
+			mediaTypeService, err := storage.MachineTypeService(ctx)
 			if err != nil {
-				log.Printf("failed to create client: %v", err)
+				log.Printf("failed to create MachineTypeService: %v", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 
-			machineTypeKey, err := datastore.DecodeKey(username)
-			var mt machineType
-			err = datastoreClient.Get(ctx, machineTypeKey, &mt)
-			if _, ok := err.(*datastore.ErrFieldMismatch); ok {
-				err = nil
-			}
-			if err == datastore.ErrNoSuchEntity {
-				log.Printf("unknown login (machine type)")
-				unauthorized(w)
-				return
-			}
+			mt, err := mediaTypeService.Get(username)
 			if err != nil {
 				log.Printf("error getting machine type: %v", err)
 				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			if mt == nil {
+				log.Printf("unknown login (machine type)")
+				unauthorized(w)
 				return
 			}
 
@@ -54,12 +48,7 @@ func Middleware() func(http.Handler) http.Handler {
 				return
 			}
 
-			accountKey := machineTypeKey.Parent
-			context.Set(r, "account", accountKey.Name)
-			context.Set(r, "machineType", machineTypeKey)
-			context.Set(r, "features", mt.Features)
-
-			log.Printf("authorized request for machine type %q", mt.DisplayName)
+			context.Set(r, "machineType", mt)
 
 			next.ServeHTTP(w, r)
 		})
