@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"log"
 	"metahub"
-	"metahub/storage/clouddatastore"
+	"metahub/pkg/storage/clouddatastore"
 	"net/http"
 	"os"
 
-	"metahub/server"
+	"metahub/cmd"
 )
 
 func main() {
@@ -20,7 +20,7 @@ func main() {
 	storageService := clouddatastore.NewService()
 	env := metahub.NewEnvironment(storageService)
 
-	server.RegisterRoutes(env)
+	cmd.RegisterRoutes(env)
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }

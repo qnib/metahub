@@ -9,8 +9,8 @@ import (
 	"github.com/gorilla/context"
 )
 
-// Middleware checks machine type credentials
-func Middleware(env metahub.Environment) func(http.Handler) http.Handler {
+// AuthMiddleware checks machine type credentials
+func AuthMiddleware(env metahub.Environment) func(http.Handler) http.Handler {
 	storage := env.Storage()
 
 	return func(next http.Handler) http.Handler {
@@ -48,7 +48,7 @@ func Middleware(env metahub.Environment) func(http.Handler) http.Handler {
 				return
 			}
 
-			context.Set(r, "machineType", mt)
+			context.Set(r, "machineType", *mt)
 
 			next.ServeHTTP(w, r)
 		})

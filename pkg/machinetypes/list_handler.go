@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"metahub"
-	"metahub/storage"
+	"metahub/pkg/storage"
 	"net/http"
 
 	"github.com/gorilla/context"

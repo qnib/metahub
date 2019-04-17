@@ -1,0 +1,39 @@
+package proxy
+
+import (
+	"fmt"
+	"metahub/pkg/machinetypes"
+	"net/http"
+
+	"metahub"
+
+	"github.com/docker/distribution/reference"
+	"github.com/gorilla/mux"
+)
+
+// NewRouter returns a router for the registry API endpoints
+func NewRouter(env metahub.Environment, pathPrefix string) http.Handler {
+	router := mux.NewRouter()
+	router.Use(machinetypes.AuthMiddleware(env))
+	router.Handle(pathPrefix+"/{image}/manifests/{reference}", getRegistryHandler(env)).Methods("GET")
+	router.Handle(pathPrefix+"/{repo}/{image}/manifests/{reference}", getRegistryHandler(env)).Methods("GET")
+	router.Handle(pathPrefix+"/{image}/blobs/{reference}", getBlobsHandler(env)).Methods("GET")
+	router.Handle(pathPrefix+"/{repo}/{image}/blobs/{reference}", getBlobsHandler(env)).Methods("GET")
+	router.Handle(pathPrefix+"/", getBaseHandler(env)).Methods("GET")
+	return router
+}
+
+func getRepository(r *http.Request) (reference.Named, error) {
+	vars := mux.Vars(r)
+	image := vars["image"]
+	repo := vars["repo"]
+	if repo == "" {
+		repo = "library"
+	}
+	name := repo + "/" + image
+	n, err := reference.WithName(name)
+	if err != nil {
+		return nil, fmt.Errorf("error parsing repository name: %v", err)
+	}
+	return n, nil
+}

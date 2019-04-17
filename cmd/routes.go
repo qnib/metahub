@@ -1,18 +1,18 @@
-package server
+package cmd
 
 import (
 	"metahub"
 	"net/http"
 
-	"metahub/auth"
-	"metahub/machinetypes"
-	"metahub/registry"
+	"metahub/pkg/accounts"
+	"metahub/pkg/machinetypes"
+	"metahub/pkg/registry/proxy"
 )
 
 // RegisterRoutes registers handlers/routers
 func RegisterRoutes(env metahub.Environment) {
-	handleRouter(env, "/v2", registry.NewRouter)
-	handleRouter(env, "/auth", auth.NewRouter)
+	handleRouter(env, "/v2", proxy.NewRouter)
+	handleRouter(env, "/auth", accounts.NewRouter)
 	handleRouter(env, "/machinetypes", machinetypes.NewRouter)
 }
 

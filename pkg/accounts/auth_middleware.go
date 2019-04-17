@@ -1,4 +1,4 @@
-package auth
+package accounts
 
 import (
 	"fmt"
@@ -18,8 +18,8 @@ var (
 	insufficientScope oauthError = "insufficient_scope"
 )
 
-// Middleware checks user
-func Middleware(env metahub.Environment) func(http.Handler) http.Handler {
+// AuthMiddleware checks user
+func AuthMiddleware(env metahub.Environment) func(http.Handler) http.Handler {
 	storage := env.Storage()
 
 	realm := "MetaHub"

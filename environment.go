@@ -1,7 +1,7 @@
 package metahub
 
 import (
-	"metahub/storage"
+	"metahub/pkg/storage"
 )
 
 // Environment is an execution environment
