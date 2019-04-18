@@ -11,7 +11,7 @@ import (
 // NewRouter returns a router for auth callbacks
 func NewRouter(env metahub.Environment, pathPrefix string) http.Handler {
 	router := mux.NewRouter()
-	router.HandleFunc(pathPrefix+"/github", githubHandler).Methods("POST")
-	router.HandleFunc(pathPrefix+"/google", googleHandler).Methods("POST")
+	router.Handle(pathPrefix+"/github", getGitHubHandler(env)).Methods("POST")
+	router.Handle(pathPrefix+"/google", getGoogleHandler(env)).Methods("POST")
 	return router
 }

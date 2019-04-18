@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"metahub"
+	"metahub/pkg/storage"
 	"net/http"
 
-	"cloud.google.com/go/datastore"
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 	githuboauth "golang.org/x/oauth2/github"
@@ -23,66 +24,87 @@ var (
 
 var providerNameGitHub = "github"
 
-func githubHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+func getGitHubHandler(env metahub.Environment) http.Handler {
+	storageService := env.Storage()
 
-	decoder := json.NewDecoder(r.Body)
-	var body struct {
-		Code string `json:"code"`
-	}
-	err := decoder.Decode(&body)
-	if err != nil {
-		log.Printf("error decoding code: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	//log.Printf("code: %s", body.Code)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 
-	//TODO: verify client id
+		decoder := json.NewDecoder(r.Body)
+		var body struct {
+			Code string `json:"code"`
+		}
+		err := decoder.Decode(&body)
+		if err != nil {
+			log.Printf("error decoding code: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		//log.Printf("code: %s", body.Code)
 
-	token, err := gitHubConfig.Exchange(oauth2.NoContext, body.Code)
-	if err != nil {
-		log.Printf("oauthConf.Exchange() failed")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	if !token.Valid() {
-		log.Printf("token invalid")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+		//TODO: verify client id
 
-	oauthClient := gitHubConfig.Client(oauth2.NoContext, token)
-	client := github.NewClient(oauthClient)
-	user, _, err := client.Users.Get(ctx, "")
-	if err != nil {
-		log.Printf("error client.Users.Get(): %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	log.Printf("Logged in as GitHub user: %s\n", *user.Login)
+		token, err := gitHubConfig.Exchange(oauth2.NoContext, body.Code)
+		if err != nil {
+			log.Printf("oauthConf.Exchange() failed")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		if !token.Valid() {
+			log.Printf("token invalid")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	datastoreClient, err := datastore.NewClient(ctx, "")
-	if err != nil {
-		log.Printf("failed to create client: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+		oauthClient := gitHubConfig.Client(oauth2.NoContext, token)
+		client := github.NewClient(oauthClient)
+		user, _, err := client.Users.Get(ctx, "")
+		if err != nil {
+			log.Printf("error client.Users.Get(): %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		log.Printf("Logged in as GitHub user: %s\n", *user.Login)
 
-	if err := updateAccountAccess(ctx, datastoreClient, providerNameGitHub, *token, fmt.Sprintf("%d", user.GetID()), account{
-		DisplayName: user.GetEmail(),
-	}); err != nil {
-		log.Printf("error updating account: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+		accountService, err := storageService.AccountService(ctx)
+		if err != nil {
+			log.Printf("failed to create AccountService: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	jwt, err := tokenToJSON(token)
-	if err != nil {
-		log.Printf("error creating JWT: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+		accountName := storage.GetAccountName(providerNameGoogle, fmt.Sprintf("%d", user.GetID()))
+		if err := accountService.Upsert(accountName, storage.Account{
+			DisplayName: user.GetEmail(),
+		}); err != nil {
+			log.Printf("error updating account: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	w.Write([]byte(jwt))
+		accessTokenService, err := storageService.AccessTokenService(ctx)
+		if err != nil {
+			log.Printf("failed to create AccessTokenService: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		if err := accessTokenService.Put(token.AccessToken, storage.AccessToken{
+			AccountName: accountName,
+			Expiry:      token.Expiry,
+		}); err != nil {
+			log.Printf("error storing access token: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		jwt, err := tokenToJSON(token)
+		if err != nil {
+			log.Printf("error creating JWT: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.Write([]byte(jwt))
+	})
 }

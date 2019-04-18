@@ -41,3 +41,14 @@ func (s *service) AccessTokenService(ctx context.Context) (storage.AccessTokenSe
 		client: datastoreClient,
 	}, nil
 }
+
+func (s *service) AccountService(ctx context.Context) (storage.AccountService, error) {
+	datastoreClient, err := s.newClient(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create client: %v", err)
+	}
+	return &accountService{
+		ctx:    ctx,
+		client: datastoreClient,
+	}, nil
+}

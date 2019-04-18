@@ -6,4 +6,5 @@ import "context"
 type Service interface {
 	MachineTypeService(ctx context.Context) (MachineTypeService, error)
 	AccessTokenService(ctx context.Context) (AccessTokenService, error)
+	AccountService(ctx context.Context) (AccountService, error)
 }
