@@ -3,7 +3,7 @@ package accounts
 import (
 	"fmt"
 	"log"
-	"metahub"
+	"metahub/pkg/daemon"
 	"net/http"
 	"strings"
 
@@ -19,7 +19,7 @@ var (
 )
 
 // AuthMiddleware checks user
-func AuthMiddleware(env metahub.Environment) func(http.Handler) http.Handler {
+func AuthMiddleware(env daemon.Environment) func(http.Handler) http.Handler {
 	storage := env.Storage()
 
 	realm := "MetaHub"

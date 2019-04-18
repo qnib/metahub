@@ -3,7 +3,7 @@ package machinetypes
 import (
 	"encoding/json"
 	"log"
-	"metahub"
+	"metahub/pkg/daemon"
 	"net/http"
 
 	"metahub/pkg/storage"
@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/context"
 )
 
-func getAddHandler(env metahub.Environment) http.Handler {
+func getAddHandler(env daemon.Environment) http.Handler {
 	storageService := env.Storage()
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

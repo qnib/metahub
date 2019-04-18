@@ -3,14 +3,14 @@ package machinetypes
 import (
 	"fmt"
 	"log"
-	"metahub"
+	"metahub/pkg/daemon"
 	"net/http"
 
 	"github.com/gorilla/context"
 )
 
 // AuthMiddleware checks machine type credentials
-func AuthMiddleware(env metahub.Environment) func(http.Handler) http.Handler {
+func AuthMiddleware(env daemon.Environment) func(http.Handler) http.Handler {
 	storage := env.Storage()
 
 	return func(next http.Handler) http.Handler {

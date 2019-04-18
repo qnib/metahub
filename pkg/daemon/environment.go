@@ -1,4 +1,4 @@
-package metahub
+package daemon
 
 import (
 	"metahub/pkg/storage"

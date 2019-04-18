@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
-	"metahub"
+	"metahub/pkg/daemon"
 	"metahub/pkg/storage"
 	"net/http"
 	"strings"
@@ -15,7 +15,7 @@ import (
 
 var providerNameGoogle = "google"
 
-func getGoogleHandler(env metahub.Environment) http.Handler {
+func getGoogleHandler(env daemon.Environment) http.Handler {
 	storageService := env.Storage()
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

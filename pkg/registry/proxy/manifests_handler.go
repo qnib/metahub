@@ -3,7 +3,7 @@ package proxy
 import (
 	"fmt"
 	"log"
-	"metahub"
+	"metahub/pkg/daemon"
 	"metahub/pkg/storage"
 	"net/http"
 
@@ -25,7 +25,7 @@ func init() {
 	_ = manifestSchema.SchemaVersion
 }
 
-func getRegistryHandler(env metahub.Environment) http.Handler {
+func getRegistryHandler(env daemon.Environment) http.Handler {
 	//storageService := env.Storage()
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

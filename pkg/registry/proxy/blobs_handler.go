@@ -3,7 +3,7 @@ package proxy
 import (
 	"io"
 	"log"
-	"metahub"
+	"metahub/pkg/daemon"
 	"net/http"
 	"strconv"
 
@@ -12,7 +12,7 @@ import (
 	digest "github.com/opencontainers/go-digest"
 )
 
-func getBlobsHandler(env metahub.Environment) http.Handler {
+func getBlobsHandler(env daemon.Environment) http.Handler {
 	//storageService := env.Storage()
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

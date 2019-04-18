@@ -2,17 +2,16 @@ package proxy
 
 import (
 	"fmt"
+	"metahub/pkg/daemon"
 	"metahub/pkg/machinetypes"
 	"net/http"
-
-	"metahub"
 
 	"github.com/docker/distribution/reference"
 	"github.com/gorilla/mux"
 )
 
 // NewRouter returns a router for the registry API endpoints
-func NewRouter(env metahub.Environment, pathPrefix string) http.Handler {
+func NewRouter(env daemon.Environment, pathPrefix string) http.Handler {
 	router := mux.NewRouter()
 	router.Use(machinetypes.AuthMiddleware(env))
 	router.Handle(pathPrefix+"/{image}/manifests/{reference}", getRegistryHandler(env)).Methods("GET")

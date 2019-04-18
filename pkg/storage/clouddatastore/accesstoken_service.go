@@ -32,7 +32,11 @@ func (s *accessTokenService) Get(token string) (*storage.AccessToken, error) {
 
 func (s *accessTokenService) Put(token string, at storage.AccessToken) error {
 	accessTokenKey := datastore.NameKey(accessTokenEntityKind, token, nil)
-	if _, err := s.client.Put(s.ctx, accessTokenKey, &at); err != nil {
+	e := accessToken{
+		AccountName: at.AccountName,
+		Expiry:      at.Expiry,
+	}
+	if _, err := s.client.Put(s.ctx, accessTokenKey, &e); err != nil {
 		return fmt.Errorf("error putting access token: %v", err)
 	}
 	return nil

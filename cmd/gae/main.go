@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
-	"metahub"
+	"metahub/pkg/daemon"
 	"metahub/pkg/storage/clouddatastore"
 	"net/http"
 	"os"
@@ -18,7 +18,7 @@ func main() {
 	}
 
 	storageService := clouddatastore.NewService()
-	env := metahub.NewEnvironment(storageService)
+	env := daemon.NewEnvironment(storageService)
 
 	cmd.RegisterRoutes(env)
 
