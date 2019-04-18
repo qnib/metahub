@@ -1,11 +1,11 @@
 package accounts
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
-	"log"
 	"metahub/pkg/daemon"
-	"metahub/pkg/storage"
 	"net/http"
 	"strings"
 
@@ -13,65 +13,24 @@ import (
 	googleAuth "golang.org/x/oauth2/google"
 )
 
-var providerNameGoogle = "google"
-
 func getGoogleHandler(service daemon.Service) http.Handler {
-	storageService := service.Storage()
 
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
+	config := oauth2.Config{
+		ClientID:     "936040293434-i3m9p4km8it5np2bs253a7rvedchofs6.apps.googleusercontent.com",
+		ClientSecret: "E0wI5Bb0KbZ1__DgztogDu1O",
+		Scopes:       []string{"profile", "email", "openid"},
+		Endpoint:     googleAuth.Endpoint,
+	}
 
-		decoder := json.NewDecoder(r.Body)
-		var body struct {
-			Code        string `json:"code"`
-			ClientID    string `json:"clientId"`
-			RedirectURI string `json:"redirectUri"`
-		}
-		err := decoder.Decode(&body)
-		if err != nil {
-			log.Printf("error decoding code: %v", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		googleConfig := &oauth2.Config{
-			ClientID:     "936040293434-i3m9p4km8it5np2bs253a7rvedchofs6.apps.googleusercontent.com",
-			ClientSecret: "E0wI5Bb0KbZ1__DgztogDu1O",
-			Scopes:       []string{"profile", "email", "openid"},
-			Endpoint:     googleAuth.Endpoint,
-			RedirectURL:  body.RedirectURI,
-		}
-
-		if body.ClientID != googleConfig.ClientID {
-			log.Printf("invalid client ID %q", body.ClientID)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		token, err := googleConfig.Exchange(ctx, body.Code)
-		if err != nil {
-			log.Printf("Exchange failed: %v", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		if !token.Valid() {
-			log.Printf("token invalid")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
+	return getBaseHandler(service, "google", config, func(ctx context.Context, token *oauth2.Token) (*user, error) {
 		response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
 		if err != nil {
-			log.Printf("failed getting user info: %v", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			return nil, fmt.Errorf("failed getting user info: %v", err)
 		}
 		defer response.Body.Close()
 		contents, err := ioutil.ReadAll(response.Body)
 		if err != nil {
-			log.Printf("failed read response: %v", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			return nil, fmt.Errorf("failed read response: %v", err)
 		}
 
 		userInfoReader := strings.NewReader(string(contents))
@@ -82,52 +41,13 @@ func getGoogleHandler(service daemon.Service) http.Handler {
 			Name  string `json:"name"`
 		}
 		if err := userInfoDecoder.Decode(&userInfo); err != nil {
-			log.Printf("error decoding user info: %v", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			return nil, fmt.Errorf("error decoding user info: %v", err)
 		}
 
-		accountService, err := storageService.AccountService(ctx)
-		if err != nil {
-			log.Printf("failed to create AccountService: %v", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		accountName := storage.GetAccountName(providerNameGoogle, userInfo.ID)
-		if err := accountService.Upsert(accountName, storage.Account{
-			DisplayName: userInfo.Name,
-		}); err != nil {
-			log.Printf("error updating account: %v", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		accessTokenService, err := storageService.AccessTokenService(ctx)
-		if err != nil {
-			log.Printf("failed to create AccessTokenService: %v", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		if err := accessTokenService.Put(token.AccessToken, storage.AccessToken{
-			AccountName: accountName,
-			Expiry:      token.Expiry,
-		}); err != nil {
-			log.Printf("error storing access token: %v", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		jwt, err := tokenToJSON(token)
-		if err != nil {
-			log.Printf("error creating JWT: %v", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		//log.Print(jwt)
-
-		w.Write([]byte(jwt))
+		return &user{
+			ID:   userInfo.ID,
+			Name: userInfo.Name,
+		}, nil
 	})
+
 }
