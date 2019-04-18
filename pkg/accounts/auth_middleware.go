@@ -19,8 +19,8 @@ var (
 )
 
 // AuthMiddleware checks user
-func AuthMiddleware(env daemon.Environment) func(http.Handler) http.Handler {
-	storage := env.Storage()
+func AuthMiddleware(service daemon.Service) func(http.Handler) http.Handler {
+	storage := service.Storage()
 
 	realm := "MetaHub"
 

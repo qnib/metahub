@@ -11,14 +11,14 @@ import (
 )
 
 // NewRouter returns a router for the registry API endpoints
-func NewRouter(env daemon.Environment, pathPrefix string) http.Handler {
+func NewRouter(service daemon.Service, pathPrefix string) http.Handler {
 	router := mux.NewRouter()
-	router.Use(machinetypes.AuthMiddleware(env))
-	router.Handle(pathPrefix+"/{image}/manifests/{reference}", getRegistryHandler(env)).Methods("GET")
-	router.Handle(pathPrefix+"/{repo}/{image}/manifests/{reference}", getRegistryHandler(env)).Methods("GET")
-	router.Handle(pathPrefix+"/{image}/blobs/{reference}", getBlobsHandler(env)).Methods("GET")
-	router.Handle(pathPrefix+"/{repo}/{image}/blobs/{reference}", getBlobsHandler(env)).Methods("GET")
-	router.Handle(pathPrefix+"/", getBaseHandler(env)).Methods("GET")
+	router.Use(machinetypes.AuthMiddleware(service))
+	router.Handle(pathPrefix+"/{image}/manifests/{reference}", getRegistryHandler(service)).Methods("GET")
+	router.Handle(pathPrefix+"/{repo}/{image}/manifests/{reference}", getRegistryHandler(service)).Methods("GET")
+	router.Handle(pathPrefix+"/{image}/blobs/{reference}", getBlobsHandler(service)).Methods("GET")
+	router.Handle(pathPrefix+"/{repo}/{image}/blobs/{reference}", getBlobsHandler(service)).Methods("GET")
+	router.Handle(pathPrefix+"/", getBaseHandler(service)).Methods("GET")
 	return router
 }
 

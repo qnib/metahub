@@ -4,22 +4,25 @@ import (
 	"metahub/pkg/storage"
 )
 
-// Environment is an execution environment
-type Environment interface {
+// Service is the main interface to other execution services
+type Service interface {
 	Storage() storage.Service
 }
 
-// NewEnvironment returns a new environment
-func NewEnvironment(storageService storage.Service) Environment {
-	return environment{
+// Environment is the main interface to other execution services
+type Environment = Service
+
+// NewService returns a new environment
+func NewService(storageService storage.Service) Service {
+	return service{
 		storageService: storageService,
 	}
 }
 
-type environment struct {
+type service struct {
 	storageService storage.Service
 }
 
-func (e environment) Storage() storage.Service {
+func (e service) Storage() storage.Service {
 	return e.storageService
 }

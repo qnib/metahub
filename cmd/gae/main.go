@@ -18,9 +18,9 @@ func main() {
 	}
 
 	storageService := clouddatastore.NewService()
-	env := daemon.NewEnvironment(storageService)
+	daemonService := daemon.NewService(storageService)
 
-	cmd.RegisterRoutes(env)
+	cmd.RegisterRoutes(daemonService)
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }

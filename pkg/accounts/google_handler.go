@@ -15,8 +15,8 @@ import (
 
 var providerNameGoogle = "google"
 
-func getGoogleHandler(env daemon.Environment) http.Handler {
-	storageService := env.Storage()
+func getGoogleHandler(service daemon.Service) http.Handler {
+	storageService := service.Storage()
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

@@ -10,12 +10,12 @@ import (
 )
 
 // NewRouter returns a router for feature sets
-func NewRouter(env daemon.Environment, pathPrefix string) http.Handler {
+func NewRouter(service daemon.Service, pathPrefix string) http.Handler {
 	router := mux.NewRouter()
-	router.Use(auth.AuthMiddleware(env))
-	router.Handle(pathPrefix+"/add", getAddHandler(env)).Methods("POST")
-	router.Handle(pathPrefix+"/list", getListHandler(env)).Methods("GET")
-	router.Handle(pathPrefix+"/delete", getDeleteHandler(env)).Methods("POST")
-	router.Handle(pathPrefix+"/update", getUpdateHandler(env)).Methods("POST")
+	router.Use(auth.AuthMiddleware(service))
+	router.Handle(pathPrefix+"/add", getAddHandler(service)).Methods("POST")
+	router.Handle(pathPrefix+"/list", getListHandler(service)).Methods("GET")
+	router.Handle(pathPrefix+"/delete", getDeleteHandler(service)).Methods("POST")
+	router.Handle(pathPrefix+"/update", getUpdateHandler(service)).Methods("POST")
 	return router
 }

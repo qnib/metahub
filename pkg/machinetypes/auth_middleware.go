@@ -10,8 +10,8 @@ import (
 )
 
 // AuthMiddleware checks machine type credentials
-func AuthMiddleware(env daemon.Environment) func(http.Handler) http.Handler {
-	storage := env.Storage()
+func AuthMiddleware(service daemon.Service) func(http.Handler) http.Handler {
+	storage := service.Storage()
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

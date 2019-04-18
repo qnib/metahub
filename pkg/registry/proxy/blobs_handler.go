@@ -12,7 +12,7 @@ import (
 	digest "github.com/opencontainers/go-digest"
 )
 
-func getBlobsHandler(env daemon.Environment) http.Handler {
+func getBlobsHandler(service daemon.Service) http.Handler {
 	//storageService := env.Storage()
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

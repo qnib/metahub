@@ -10,8 +10,8 @@ import (
 	"github.com/gorilla/context"
 )
 
-func getListHandler(env daemon.Environment) http.Handler {
-	storageService := env.Storage()
+func getListHandler(service daemon.Service) http.Handler {
+	storageService := service.Storage()
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

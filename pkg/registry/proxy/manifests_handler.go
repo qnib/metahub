@@ -25,7 +25,7 @@ func init() {
 	_ = manifestSchema.SchemaVersion
 }
 
-func getRegistryHandler(env daemon.Environment) http.Handler {
+func getRegistryHandler(service daemon.Service) http.Handler {
 	//storageService := env.Storage()
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
