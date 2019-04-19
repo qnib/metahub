@@ -9,11 +9,6 @@ type Service interface {
 	Storage() storage.Service
 }
 
-// Environment is the main interface to other execution services
-type Environment = Service
-
-ein fehler mit absicht!
-
 // NewService returns a new environment
 func NewService(storageService storage.Service) Service {
 	return service{
