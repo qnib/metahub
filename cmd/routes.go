@@ -6,12 +6,12 @@ import (
 
 	"metahub/pkg/accounts"
 	"metahub/pkg/machinetypes"
-	"metahub/pkg/registry/proxy"
+	"metahub/pkg/registry/server"
 )
 
 // RegisterRoutes registers handlers/routers
 func RegisterRoutes(service daemon.Service) {
-	handleRouter(service, "/v2", proxy.NewRouter)
+	handleRouter(service, "/v2", server.NewRouter)
 	handleRouter(service, "/auth", accounts.NewRouter)
 	handleRouter(service, "/machinetypes", machinetypes.NewRouter)
 }
