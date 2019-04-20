@@ -73,88 +73,92 @@
       </v-card>
     </v-dialog>
     <v-dialog :value="editDialog" persistent width="500">
-      <v-card>
-        <v-card-title primary-title class="headline">Edit Machine Type</v-card-title>
-        <v-container grid-list-md>
-          <v-flex xs12>
-            <v-text-field label="Name" v-model="selection.name" required></v-text-field>
-          </v-flex>
-          <v-flex xs12>
-            <v-combobox
-              v-model="selection.features"
-              :items="commonFeatures"
-              chips
-              label="Features"
-              item-value="name"
-              :return-object="false"
-              multiple
-              dense
-              hide-selected
-            >
-              <template v-slot:selection="data">
-                <v-chip
-                  :key="JSON.stringify(data.item)"
-                  :selected="data.selected"
-                  close
-                  class="chip--select-multi"
-                  @input="removeFeature(data.item)"
-                >{{ formatFeature(data.item) }}</v-chip>
-              </template>
-              <template v-slot:item="data">
-                <v-list-tile-content v-text="data.item.title"></v-list-tile-content>
-              </template>
-            </v-combobox>
-          </v-flex>
-        </v-container>
-        <v-divider></v-divider>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="info" flat @click="closeEditDialog()">Cancel</v-btn>
-          <v-btn color="primary" @click="confirmEditDialog()">Update</v-btn>
-        </v-card-actions>
-      </v-card>
+      <v-form v-model="editDialogValid">
+        <v-card>
+          <v-card-title primary-title class="headline">Edit Machine Type</v-card-title>
+          <v-container grid-list-md>
+            <v-flex xs12>
+              <v-text-field label="Name" v-model="selection.name" :rules="[rules.required]"></v-text-field>
+            </v-flex>
+            <v-flex xs12>
+              <v-combobox
+                v-model="selection.features"
+                :items="commonFeatures"
+                chips
+                label="Features"
+                item-value="name"
+                :return-object="false"
+                multiple
+                dense
+                hide-selected
+              >
+                <template v-slot:selection="data">
+                  <v-chip
+                    :key="JSON.stringify(data.item)"
+                    :selected="data.selected"
+                    close
+                    class="chip--select-multi"
+                    @input="removeFeature(data.item)"
+                  >{{ formatFeature(data.item) }}</v-chip>
+                </template>
+                <template v-slot:item="data">
+                  <v-list-tile-content v-text="data.item.title"></v-list-tile-content>
+                </template>
+              </v-combobox>
+            </v-flex>
+          </v-container>
+          <v-divider></v-divider>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="info" flat @click="closeEditDialog()">Cancel</v-btn>
+            <v-btn color="primary" :disabled="!editDialogValid" @click="confirmEditDialog()">Update</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
     </v-dialog>
     <v-dialog :value="newDialog" persistent width="500">
-      <v-card>
-        <v-card-title primary-title class="headline">Add Machine Type</v-card-title>
-        <v-container grid-list-md>
-          <v-flex xs12>
-            <v-text-field label="Name" v-model="selection.name" required></v-text-field>
-          </v-flex>
-          <v-flex xs12>
-            <v-combobox
-              v-model="selection.features"
-              :items="commonFeatures"
-              chips
-              label="Features"
-              item-value="name"
-              :return-object="false"
-              multiple
-              dense
-              hide-selected
-            >
-              <template v-slot:selection="data">
-                <v-chip
-                  :key="JSON.stringify(data.item)"
-                  :selected="data.selected"
-                  close
-                  class="chip--select-multi"
-                  @input="removeFeature(data.item)"
-                >{{ formatFeature(data.item) }}</v-chip>
-              </template>
-              <template v-slot:item="data">
-                <v-list-tile-content v-text="data.item.title"></v-list-tile-content>
-              </template>
-            </v-combobox>
-          </v-flex>
-        </v-container>
-        <v-divider></v-divider>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="info" flat @click="cancelNewDialog()">Cancel</v-btn>
-          <v-btn color="primary" @click="confirmNewDialog()">Add</v-btn>
-        </v-card-actions>
-      </v-card>
+      <v-form v-model="newDialogValid">
+        <v-card>
+          <v-card-title primary-title class="headline">Add Machine Type</v-card-title>
+          <v-container grid-list-md>
+            <v-flex xs12>
+              <v-text-field label="Name" v-model="selection.name" :rules="[rules.required]"></v-text-field>
+            </v-flex>
+            <v-flex xs12>
+              <v-combobox
+                v-model="selection.features"
+                :items="commonFeatures"
+                chips
+                label="Features"
+                item-value="name"
+                :return-object="false"
+                multiple
+                dense
+                hide-selected
+              >
+                <template v-slot:selection="data">
+                  <v-chip
+                    :key="JSON.stringify(data.item)"
+                    :selected="data.selected"
+                    close
+                    class="chip--select-multi"
+                    @input="removeFeature(data.item)"
+                  >{{ formatFeature(data.item) }}</v-chip>
+                </template>
+                <template v-slot:item="data">
+                  <v-list-tile-content v-text="data.item.title"></v-list-tile-content>
+                </template>
+              </v-combobox>
+            </v-flex>
+          </v-container>
+          <v-divider></v-divider>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="info" flat @click="cancelNewDialog()">Cancel</v-btn>
+            <v-btn color="primary" :disabled="!newDialogValid" @click="confirmNewDialog()">Add</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
     </v-dialog>
   </v-container>
 </template>
@@ -168,7 +172,9 @@ export default {
       credentialsDialog: false,
       showCredentialsPassword: false,
       editDialog: false,
+      editDialogValid: false,
       newDialog: false,
+      newDialogValid: false,
       selection: {},
       newFeatureName: "",
       commonFeatures: [
@@ -176,7 +182,10 @@ export default {
         { name: "cpu:skylake", title: "Skylake", group: "CPU" },
         { header: "GPU" },
         { name: "gpu:tegrak1", title: "Tegra K1", group: "GPU" }
-      ]
+      ],
+      rules: {
+        required: value => !!value || "Required."
+      }
     };
   },
   mounted() {
