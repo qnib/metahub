@@ -1,12 +1,10 @@
 package server
 
 import (
-	"fmt"
 	"metahub/pkg/daemon"
 	"metahub/pkg/machinetypes"
 	"net/http"
 
-	"github.com/docker/distribution/reference"
 	"github.com/gorilla/mux"
 )
 
@@ -22,7 +20,7 @@ func NewRouter(service daemon.Service, pathPrefix string) http.Handler {
 	return router
 }
 
-func getRepository(r *http.Request) (reference.Named, error) {
+func getRepository(r *http.Request) string {
 	vars := mux.Vars(r)
 	image := vars["image"]
 	repo := vars["repo"]
@@ -30,9 +28,5 @@ func getRepository(r *http.Request) (reference.Named, error) {
 		repo = "library"
 	}
 	name := repo + "/" + image
-	n, err := reference.WithName(name)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing repository name: %v", err)
-	}
-	return n, nil
+	return name
 }

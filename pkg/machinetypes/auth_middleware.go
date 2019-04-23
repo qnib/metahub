@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"metahub/pkg/daemon"
+	"metahub/pkg/registry/filter"
 	"net/http"
 
 	"github.com/gorilla/context"
@@ -48,7 +49,9 @@ func AuthMiddleware(service daemon.Service) func(http.Handler) http.Handler {
 				return
 			}
 
-			context.Set(r, "machineType", *mt)
+			backendRegistryService := service.Registry()
+			filterRegistryService := filter.NewService(backendRegistryService, *mt)
+			context.Set(r, "registryService", filterRegistryService)
 
 			next.ServeHTTP(w, r)
 		})

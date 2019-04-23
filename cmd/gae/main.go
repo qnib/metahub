@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"metahub/pkg/daemon"
+	registry "metahub/pkg/registry/http/client"
 	"metahub/pkg/storage/clouddatastore"
 	"net/http"
 	"os"
@@ -18,7 +19,8 @@ func main() {
 	}
 
 	storageService := clouddatastore.NewService()
-	daemonService := daemon.NewService(storageService)
+	registryService := registry.NewService()
+	daemonService := daemon.NewService(storageService, registryService)
 
 	cmd.RegisterRoutes(daemonService)
 

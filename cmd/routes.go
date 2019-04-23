@@ -6,7 +6,7 @@ import (
 
 	"metahub/pkg/accounts"
 	"metahub/pkg/machinetypes"
-	"metahub/pkg/registry/server"
+	"metahub/pkg/registry/http/server"
 )
 
 // RegisterRoutes registers handlers/routers
