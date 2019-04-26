@@ -71,7 +71,7 @@ export default {
     this.loading = true;
     this.axios
       .get("/machinetypes/get", {
-        params: {
+        params: { 
           id: this.$route.params.id
         }
       })
@@ -102,8 +102,8 @@ export default {
     saveError(error) {
       this.loading = false;
       alert(error);
-    },
-    saved(response) {
+    }, 
+    saved() {
       this.loading = false;
       this.$router.push({ name: "machine-types" });
     }
