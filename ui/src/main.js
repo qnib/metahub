@@ -27,7 +27,7 @@ Vue.use(VueRouter)
 
 import Welcome from "./components/Welcome";
 import MachineTypes from "./components/MachineTypes";
-import EditMachineType from "./components/EditMachineType"
+import MachineType from "./components/MachineType"
 
 const router = new VueRouter({
   mode: 'hash',
@@ -51,7 +51,7 @@ const router = new VueRouter({
     {
       name: "edit-machine-type",
       path: '/machinetypes/:id',
-      component: EditMachineType,
+      component: MachineType,
       meta: {
         title: "Machine Type details",
         requiresAuth: true,
