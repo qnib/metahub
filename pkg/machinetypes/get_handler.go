@@ -19,7 +19,12 @@ func getGetHandler(service daemon.Service) http.Handler {
 		accountName := context.Get(r, "account").(string)
 
 		machineTypeIDString := r.URL.Query().Get("id")
-		machineTypeID, _ := strconv.ParseInt(machineTypeIDString, 10, 64)
+		machineTypeID, err := strconv.ParseInt(machineTypeIDString, 10, 64)
+		if err != nil {
+			log.Printf("failed parsing machine type id: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
 		machineTypeService, err := storageService.MachineTypeService(ctx)
 		if err != nil {

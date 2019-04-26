@@ -1,7 +1,7 @@
 <template>
   <v-container pl-0 pr-0>
     <v-toolbar flat color="transparent" dense>
-      <v-btn @click="showNewDialog()" color="primary">Add</v-btn>
+      <v-btn :to="{ name: 'new-machine-type'}" color="primary">Add</v-btn>
       <v-spacer></v-spacer>
       <v-progress-circular v-if="loading>0" :indeterminate="true" style="float: right;"></v-progress-circular>
     </v-toolbar>
@@ -13,28 +13,29 @@
     border-top-style: solid;"
     >
       <v-list two-line>
-        <template v-for="(fs, index) in machineTypes">
-          <v-divider v-if="index>0" :key="'divider-'+fs.id"></v-divider>
-          <v-list-tile :key="'list-tile-'+fs.id">
+        <template v-for="(mt, index) in machineTypes">
+          <v-divider v-if="index>0" :key="'divider-'+mt.id"></v-divider>
+          <v-list-tile :key="'list-tile-'+mt.id">
             <v-list-tile-content>
               <v-list-tile-title>
-                <router-link :to="{ name: 'edit-machine-type', params: { id: fs.id }}">{{ fs.name }}</router-link>
+                <router-link :to="{ name: 'edit-machine-type', params: { id: mt.id }}">{{ mt.name }}</router-link>
               </v-list-tile-title>
-              <v-list-tile-sub-title>
-                <span v-for="(feature, index) in fs.features" :key="index">
+              <v-list-tile-sub-title v-if="mt.features">
+                <span v-for="(feature, index) in mt.features" :key="index">
                   <span v-if="index>0">,&nbsp;</span>
                   <span>{{formatFeature(feature)}}</span>
                 </span>
               </v-list-tile-sub-title>
+              <v-list-tile-sub-title v-else>(no features specified)</v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-btn @click="showEngineCredentials(fs)" flat small color="primary">
+              <v-btn @click="showEngineCredentials(mt)" flat small color="primary">
                 <span class="hidden-md-and-down">Client&nbsp;</span>Credentials&nbsp;
                 <v-icon>account_circle</v-icon>
               </v-btn>
             </v-list-tile-action>
             <v-list-tile-action>
-              <v-btn icon @click="deleteMachineType(fs.id)">
+              <v-btn icon @click="deleteMachineType(mt.id)">
                 <v-icon color="red">delete</v-icon>
               </v-btn>
             </v-list-tile-action>
@@ -68,50 +69,6 @@
           <v-btn color="info" flat @click="hideEngineCredentials()">Close</v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
-    <v-dialog :value="newDialog" persistent width="500">
-      <v-form v-model="newDialogValid">
-        <v-card>
-          <v-card-title primary-title class="headline">Add Machine Type</v-card-title>
-          <v-container grid-list-md>
-            <v-flex xs12>
-              <v-text-field label="Name" v-model="selection.name" :rules="[rules.required]"></v-text-field>
-            </v-flex>
-            <v-flex xs12>
-              <v-combobox
-                v-model="selection.features"
-                :items="commonFeatures"
-                chips
-                label="Features"
-                item-value="name"
-                :return-object="false"
-                multiple
-                dense
-                hide-selected
-              >
-                <template v-slot:selection="data">
-                  <v-chip
-                    :key="JSON.stringify(data.item)"
-                    :selected="data.selected"
-                    close
-                    class="chip--select-multi"
-                    @input="removeFeature(data.item)"
-                  >{{ formatFeature(data.item) }}</v-chip>
-                </template>
-                <template v-slot:item="data">
-                  <v-list-tile-content v-text="data.item.title"></v-list-tile-content>
-                </template>
-              </v-combobox>
-            </v-flex>
-          </v-container>
-          <v-divider></v-divider>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="info" flat @click="cancelNewDialog()">Cancel</v-btn>
-            <v-btn color="primary" :disabled="!newDialogValid" @click="confirmNewDialog()">Add</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-form>
     </v-dialog>
   </v-container>
 </template>
@@ -150,7 +107,7 @@ export default {
           id: id
         })
         .then(this.machineTypeRemoved);
-      this.machineTypes = this.machineTypes.filter(fs => fs.id != id);
+      this.machineTypes = this.machineTypes.filter(mt => mt.id != id);
     },
     machineTypeRemoved() {
       this.loading--;
@@ -162,41 +119,6 @@ export default {
     },
     hideEngineCredentials() {
       this.credentialsDialog = false;
-    },
-    removeFeature(feature) {
-      this.selection.features = this.selection.features.filter(function(f) {
-        return f != feature;
-      });
-    },
-    addFeature() {
-      this.selection.features.push(this.newFeatureName);
-      this.newFeatureName = "";
-    },
-    showNewDialog() {
-      this.selection = {
-        name: "",
-        features: []
-      };
-      this.newFeatureName = "";
-      this.newDialog = true;
-    },
-    cancelNewDialog() {
-      this.newDialog = false;
-    },
-    confirmNewDialog() {
-      this.newDialog = false;
-      this.loading++;
-      this.axios
-        .post("/machinetypes/add", this.selection)
-        .then(this.machineTypeAdded);
-    },
-    machineTypeAdded(response) {
-      this.loading--;
-      if (response.status != 200) {
-        alert(response);
-        return;
-      }
-      this.machineTypes.push(response.data);
     }
   }
 };

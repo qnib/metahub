@@ -50,7 +50,16 @@ const router = new VueRouter({
     },
     {
       name: "edit-machine-type",
-      path: '/machinetypes/:id',
+      path: '/machinetypes/edit/:id',
+      component: MachineType,
+      meta: {
+        title: "Machine Type details",
+        requiresAuth: true,
+      }
+    },
+    {
+      name: "new-machine-type",
+      path: '/machinetypes/new',
       component: MachineType,
       meta: {
         title: "Machine Type details",
