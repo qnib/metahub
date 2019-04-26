@@ -28,7 +28,7 @@ func getGithubHandler(service daemon.Service) http.Handler {
 		if err != nil {
 			return nil, fmt.Errorf("error client.Users.Get(): %v", err)
 		}
-		log.Printf("Logged in as GitHub user: %s\n", *u.Login)
+		log.Printf("Logged in as GitHub user: %v", *u)
 
 		return &user{
 			ID:   fmt.Sprintf("%d", u.GetID()),
