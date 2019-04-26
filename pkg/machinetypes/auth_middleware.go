@@ -31,7 +31,7 @@ func AuthMiddleware(service daemon.Service) func(http.Handler) http.Handler {
 				return
 			}
 
-			mt, err := mediaTypeService.Get(username)
+			mt, err := mediaTypeService.GetByUsername(username)
 			if err != nil {
 				log.Printf("error getting machine type: %v", err)
 				w.WriteHeader(http.StatusInternalServerError)

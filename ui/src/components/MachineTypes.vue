@@ -17,7 +17,9 @@
           <v-divider v-if="index>0" :key="'divider-'+fs.id"></v-divider>
           <v-list-tile :key="'list-tile-'+fs.id">
             <v-list-tile-content>
-              <v-list-tile-title>{{ fs.name }}</v-list-tile-title>
+              <v-list-tile-title>
+                <router-link :to="{ name: 'edit-machine-type', params: { id: fs.id }}">{{ fs.name }}</router-link>
+              </v-list-tile-title>
               <v-list-tile-sub-title>
                 <span v-for="(feature, index) in fs.features" :key="index">
                   <span v-if="index>0">,&nbsp;</span>
@@ -29,11 +31,6 @@
               <v-btn @click="showEngineCredentials(fs)" flat small color="primary">
                 <span class="hidden-md-and-down">Client&nbsp;</span>Credentials&nbsp;
                 <v-icon>account_circle</v-icon>
-              </v-btn>
-            </v-list-tile-action>
-            <v-list-tile-action>
-              <v-btn icon @click="showEditDialog(fs)">
-                <v-icon color="blue">edit</v-icon>
               </v-btn>
             </v-list-tile-action>
             <v-list-tile-action>
@@ -71,50 +68,6 @@
           <v-btn color="info" flat @click="hideEngineCredentials()">Close</v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
-    <v-dialog :value="editDialog" persistent width="500">
-      <v-form v-model="editDialogValid">
-        <v-card>
-          <v-card-title primary-title class="headline">Edit Machine Type</v-card-title>
-          <v-container grid-list-md>
-            <v-flex xs12>
-              <v-text-field label="Name" v-model="selection.name" :rules="[rules.required]"></v-text-field>
-            </v-flex>
-            <v-flex xs12>
-              <v-combobox
-                v-model="selection.features"
-                :items="commonFeatures"
-                chips
-                label="Features"
-                item-value="name"
-                :return-object="false"
-                multiple
-                dense
-                hide-selected
-              >
-                <template v-slot:selection="data">
-                  <v-chip
-                    :key="JSON.stringify(data.item)"
-                    :selected="data.selected"
-                    close
-                    class="chip--select-multi"
-                    @input="removeFeature(data.item)"
-                  >{{ formatFeature(data.item) }}</v-chip>
-                </template>
-                <template v-slot:item="data">
-                  <v-list-tile-content v-text="data.item.title"></v-list-tile-content>
-                </template>
-              </v-combobox>
-            </v-flex>
-          </v-container>
-          <v-divider></v-divider>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="info" flat @click="closeEditDialog()">Cancel</v-btn>
-            <v-btn color="primary" :disabled="!editDialogValid" @click="confirmEditDialog()">Update</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-form>
     </v-dialog>
     <v-dialog :value="newDialog" persistent width="500">
       <v-form v-model="newDialogValid">
@@ -171,8 +124,6 @@ export default {
       loading: false,
       credentialsDialog: false,
       showCredentialsPassword: false,
-      editDialog: false,
-      editDialogValid: false,
       newDialog: false,
       newDialogValid: false,
       selection: {},
@@ -234,31 +185,6 @@ export default {
     addFeature() {
       this.selection.features.push(this.newFeatureName);
       this.newFeatureName = "";
-    },
-    showEditDialog(machineType) {
-      this.selection = JSON.parse(JSON.stringify(machineType));
-      this.editDialog = true;
-    },
-    closeEditDialog() {
-      this.editDialog = false;
-    },
-    confirmEditDialog() {
-      this.editDialog = false;
-      this.loading++;
-      this.axios
-        .post("/machinetypes/update", this.selection)
-        .then(this.machineTypeUpdated);
-      for (var i = 0; i < this.machineTypes.length; i++) {
-        if (this.machineTypes[i].id == this.selection.id) {
-          this.machineTypes[i] = this.selection;
-        }
-      }
-    },
-    machineTypeUpdated(response) {
-      this.loading--;
-      if (response.status != 200) {
-        alert(response);
-      }
     },
     showNewDialog() {
       this.selection = {

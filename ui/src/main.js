@@ -20,13 +20,14 @@ Vue.use(VueAuthenticate, {
 })
 
 import './mixins/login'
-
+import './mixins/features'
 
 import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 import Welcome from "./components/Welcome";
 import MachineTypes from "./components/MachineTypes";
+import EditMachineType from "./components/EditMachineType"
 
 const router = new VueRouter({
   mode: 'hash',
@@ -37,10 +38,22 @@ const router = new VueRouter({
       }
     },
     {
-      path: '/machinetypes', components: {
+      name: "machine-types",
+      path: '/machinetypes',
+      components: {
         default: MachineTypes,
-      }, meta: {
+      },
+      meta: {
         title: "Machine Types",
+        requiresAuth: true,
+      }
+    },
+    {
+      name: "edit-machine-type",
+      path: '/machinetypes/:id',
+      component: EditMachineType,
+      meta: {
+        title: "Machine Type details",
         requiresAuth: true,
       }
     },

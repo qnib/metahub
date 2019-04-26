@@ -13,7 +13,27 @@ type machineTypeService struct {
 	client *datastore.Client
 }
 
-func (s *machineTypeService) Get(username string) (*storage.MachineType, error) {
+func (s *machineTypeService) GetByID(accountName string, id int64) (*storage.MachineType, error) {
+	accountKey := datastore.NameKey(accountEntityKind, accountName, nil)
+	machineTypeKey := datastore.IDKey(machineTypeEntityKind, id, accountKey)
+	var mt machineTypeModel
+	err := s.client.Get(s.ctx, machineTypeKey, &mt)
+	if err == datastore.ErrNoSuchEntity {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("error getting datastore entity: %v", err)
+	}
+	return &storage.MachineType{
+		ID:          machineTypeKey.ID,
+		DisplayName: mt.DisplayName,
+		Features:    mt.Features,
+		Password:    mt.Password,
+		Username:    machineTypeKey.Encode(),
+	}, nil
+}
+
+func (s *machineTypeService) GetByUsername(username string) (*storage.MachineType, error) {
 	machineTypeKey, err := datastore.DecodeKey(username)
 	var mt machineTypeModel
 	err = s.client.Get(s.ctx, machineTypeKey, &mt)
@@ -27,6 +47,7 @@ func (s *machineTypeService) Get(username string) (*storage.MachineType, error) 
 		return nil, fmt.Errorf("error getting machine type: %v", err)
 	}
 	return &storage.MachineType{
+		ID:          machineTypeKey.ID,
 		DisplayName: mt.DisplayName,
 		Features:    mt.Features,
 		Password:    mt.Password,
