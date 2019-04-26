@@ -60,12 +60,7 @@ export default {
       loading: false,
       formValid: false,
       newFeatureName: "",
-      commonFeatures: [
-        { header: "CPU" },
-        { name: "cpu:skylake", title: "Skylake", group: "CPU" },
-        { header: "GPU" },
-        { name: "gpu:tegrak1", title: "Tegra K1", group: "GPU" }
-      ],
+      commonFeatures: this.getCommonFeatures(),
       rules: {
         required: value => !!value || "Required."
       },
@@ -84,15 +79,6 @@ export default {
       .catch(this.loadError);
   },
   methods: {
-    formatFeature(name) {
-      for (var i in this.commonFeatures) {
-        const f = this.commonFeatures[i];
-        if (f.name == name) {
-          return f.title;
-        }
-      }
-      return name;
-    },
     loadError(error) {
       this.loading = false;
       alert(error);
