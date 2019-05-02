@@ -155,6 +155,9 @@ export default {
   },
   methods: {
     updateLogin() {
+      if (this.machineType.login == "") {
+        this.applyNameChangedToLogin = true;
+      }
       if (!this.applyNameChangedToLogin) return;
       this.machineType.login = this.machineType.name
         .replace(/\W/g, "")

@@ -32,12 +32,6 @@
               <v-list-tile-sub-title v-else>(no features specified)</v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-btn @click="showEngineCredentials(mt)" flat small color="primary">
-                <span class="hidden-md-and-down">Client&nbsp;</span>Credentials&nbsp;
-                <v-icon>account_circle</v-icon>
-              </v-btn>
-            </v-list-tile-action>
-            <v-list-tile-action>
               <v-btn icon @click="deleteMachineType(mt.id)">
                 <v-icon color="red">delete</v-icon>
               </v-btn>
@@ -46,33 +40,6 @@
         </template>
       </v-list>
     </v-container>
-    <v-dialog :value="credentialsDialog" persistent width="650">
-      <v-card>
-        <v-card-title primary-title class="headline">Client Credentials</v-card-title>
-        <v-card-text>
-          <v-container grid-list-md>
-            <v-flex xs12>
-              <v-text-field label="Login" v-model="selection.login" readonly></v-text-field>
-            </v-flex>
-            <v-flex xs12>
-              <v-text-field
-                label="Password"
-                v-model="selection.password"
-                readonly
-                :append-icon="showCredentialsPassword ? 'visibility' : 'visibility_off'"
-                @click:append="showCredentialsPassword = !showCredentialsPassword"
-                :type="showCredentialsPassword ? 'text' : 'password'"
-              ></v-text-field>
-            </v-flex>
-          </v-container>
-        </v-card-text>
-        <v-divider></v-divider>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="info" flat @click="hideEngineCredentials()">Close</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-container>
 </template>
 
@@ -82,16 +49,6 @@ export default {
     return {
       machineTypes: [],
       loading: false,
-      credentialsDialog: false,
-      showCredentialsPassword: false,
-      newDialog: false,
-      newDialogValid: false,
-      selection: {},
-      newFeatureName: "",
-      commonFeatures: this.getCommonFeatures(),
-      rules: {
-        required: value => !!value || "Required."
-      }
     };
   },
   mounted() {
@@ -114,14 +71,6 @@ export default {
     },
     machineTypeRemoved() {
       this.loading--;
-    },
-    showEngineCredentials(machineType) {
-      this.showCredentialsPassword = false;
-      this.selection = machineType;
-      this.credentialsDialog = true;
-    },
-    hideEngineCredentials() {
-      this.credentialsDialog = false;
     }
   }
 };
