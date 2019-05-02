@@ -34,12 +34,19 @@
       <router-view name="tools"></router-view>
       <v-spacer></v-spacer>
       <v-toolbar-items>
-        <v-btn v-if="!isAuthenticated" flat @click="loginClicked()">
+        <v-btn v-if="!account" flat @click="loginClicked()">
           <span>Sign In</span>
         </v-btn>
-        <v-btn v-if="isAuthenticated" flat @click="logoutClicked()">
-          <span>Sign Out</span>
-        </v-btn>
+        <v-menu v-if="account" offset-y>
+          <template v-slot:activator="{ on }">
+            <v-btn flat v-on="on">{{ account.displayName }}</v-btn>
+          </template>
+          <v-list>
+            <v-list-tile @click="logoutClicked()">
+              <v-list-tile-title>Sign Out</v-list-tile-title>
+            </v-list-tile>
+          </v-list>
+        </v-menu>
       </v-toolbar-items>
     </v-toolbar>
     <v-content>
@@ -59,22 +66,27 @@ export default {
   data() {
     return {
       drawer: undefined,
-      isAuthenticated: this.isLoggedIn()
+      account: this.$account.getInfo()
     };
+  },
+  mounted() {
+    this.$account.$on("change", this.accountChanged);
+  },
+  beforeDestroy() {
+    this.$account.$off("change");
   },
   methods: {
     loginClicked() {
-      this.login();
+      this.$account.login();
     },
-    loginDialogClosed() {
-      this.isAuthenticated = this.isLoggedIn();
-    },
-    logoutClicked() {
-      this.logout();
-      this.isAuthenticated = this.isLoggedIn();
-      if (this.$route.meta.requiresAuth) {
+    accountChanged(account) {
+      this.account = account;
+      if (!account && this.$route.meta.requiresAuth) {
         this.$router.push({ name: "welcome" });
       }
+    },
+    logoutClicked() {
+      this.$account.logout();
     }
   }
 };

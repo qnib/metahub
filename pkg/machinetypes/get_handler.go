@@ -16,7 +16,7 @@ func getGetHandler(service daemon.Service) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		accountName := context.Get(r, "account").(string)
+		accountName := context.Get(r, "accountName").(string)
 
 		machineTypeIDString := r.URL.Query().Get("id")
 		machineTypeID, err := strconv.ParseInt(machineTypeIDString, 10, 64)

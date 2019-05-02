@@ -1,7 +1,10 @@
 <template>
   <v-container pl-0 pr-0>
     <v-toolbar flat color="transparent" dense>
-      <v-btn :to="{ name: 'new-machine-type'}" color="primary">Add</v-btn>
+      <v-btn :to="{ name: 'new-machine-type'}" color="primary">
+        <v-icon left>add</v-icon>
+        Machine Type
+      </v-btn>
       <v-spacer></v-spacer>
       <v-progress-circular v-if="loading>0" :indeterminate="true" style="float: right;"></v-progress-circular>
     </v-toolbar>

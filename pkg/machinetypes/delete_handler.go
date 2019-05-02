@@ -15,7 +15,7 @@ func getDeleteHandler(service daemon.Service) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		accountName := context.Get(r, "account").(string)
+		accountName := context.Get(r, "accountName").(string)
 
 		decoder := json.NewDecoder(r.Body)
 		var requestParams struct {

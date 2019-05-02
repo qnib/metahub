@@ -16,7 +16,7 @@ func getListHandler(service daemon.Service) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		accountName := context.Get(r, "account").(string)
+		accountName := context.Get(r, "accountName").(string)
 
 		machineTypeService, err := storageService.MachineTypeService(ctx)
 		if err != nil {
@@ -31,7 +31,6 @@ func getListHandler(service daemon.Service) http.Handler {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		//log.Printf("%d feature sets", len(featureSets))
 
 		response := struct {
 			MachineTypes []storage.MachineType `json:"machineTypes,omitempty"`
@@ -45,7 +44,7 @@ func getListHandler(service daemon.Service) http.Handler {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+		w.Header().Set("content-type", "application/json")
 		w.Write(d)
-
 	})
 }

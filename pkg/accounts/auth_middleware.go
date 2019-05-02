@@ -59,7 +59,27 @@ func AuthMiddleware(service daemon.Service) func(http.Handler) http.Handler {
 				return
 			}
 
-			context.Set(r, "account", at.AccountName)
+			accountService, err := storage.AccountService(ctx)
+			if err != nil {
+				log.Printf("error getting account service: %v", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			account, err := accountService.Get(at.AccountName)
+			if err != nil {
+				log.Printf("error getting account: %v", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			if account == nil {
+				log.Printf("unknown account")
+				unauthorized(w, realm, invalidToken, "unknown account")
+				return
+			}
+
+			context.Set(r, "accountName", at.AccountName)
+			context.Set(r, "account", account)
 
 			next.ServeHTTP(w, r)
 		})

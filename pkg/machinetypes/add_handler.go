@@ -17,14 +17,11 @@ func getAddHandler(service daemon.Service) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		accountName := context.Get(r, "account").(string)
+		accountName := context.Get(r, "accountName").(string)
 
 		decoder := json.NewDecoder(r.Body)
-		var requestParams struct {
-			DisplayName string   `json:"name"`
-			Features    []string `json:"features"`
-		}
-		err := decoder.Decode(&requestParams)
+		var mt storage.MachineType
+		err := decoder.Decode(&mt)
 		if err != nil {
 			log.Printf("error decoding request data: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -38,24 +35,11 @@ func getAddHandler(service daemon.Service) http.Handler {
 			return
 		}
 
-		newPassword, err := generateLoginPassword()
-		if err != nil {
-			log.Printf("failed to generate new password: %v", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		mt := storage.MachineType{
-			DisplayName: requestParams.DisplayName,
-			Features:    requestParams.Features,
-			Password:    newPassword,
-		}
-
 		if err := machineTypeService.Add(accountName, &mt); err != nil {
 			log.Printf("failed adding machine type: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
-		}
+		} 
 
 		d, err := json.Marshal(mt)
 		if err != nil {
@@ -63,6 +47,7 @@ func getAddHandler(service daemon.Service) http.Handler {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+		w.Header().Set("content-type", "application/json")
 		w.Write(d)
 	})
 }

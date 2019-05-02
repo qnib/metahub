@@ -36,3 +36,16 @@ func (s *accountService) Upsert(name string, a storage.Account) error {
 	}
 	return nil
 }
+
+func (s *accountService) Get(name string) (*storage.Account, error) {
+	k := datastore.NameKey(accountEntityKind, name, nil)
+	var e account
+	if err := s.client.Get(s.ctx, k, &e); err == datastore.ErrNoSuchEntity {
+		return nil, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("error getting entity: %v", err)
+	}
+	return &storage.Account{
+		DisplayName: e.DisplayName,
+	}, nil
+}
