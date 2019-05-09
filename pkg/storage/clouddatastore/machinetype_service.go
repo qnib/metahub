@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"metahub/pkg/storage"
-
+	"sort"
 	"cloud.google.com/go/datastore"
 )
 
@@ -136,8 +136,16 @@ func (s *machineTypeService) List(accountName string) ([]storage.MachineType, er
 	}
 	//log.Printf("%d feature sets", len(featureSets))
 
+	displayNames := []string{}
+	typeMap := map[string]int{}
 	result := make([]storage.MachineType, len(machineTypes))
 	for i, mt := range machineTypes {
+		displayNames = append(displayNames, mt.DisplayName)
+		typeMap[mt.DisplayName] = i
+	}
+	sort.Strings(displayNames)
+	for _, k := range displayNames {
+		i := typeMap[k]
 		k := machineTypeKeys[i]
 		result[i] = storage.MachineType{
 			ID:          k.ID,
