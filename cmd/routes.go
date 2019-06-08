@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"log"
 	"metahub/pkg/daemon"
 	"net/http"
 
