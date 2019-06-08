@@ -24,10 +24,7 @@ func RegisterAPIRoutes(service daemon.Service, router *http.ServeMux) {
 }
 
 func RegisterStaticRoutes(service daemon.Service, router *http.ServeMux) {
-	//TODO:  add handler for /static and templates/gen/index.html
-	//http.Handle("/static/", http.FileServer(http.Dir("/srv/html/static")))
 	router.Handle("/", http.FileServer(http.Dir("/srv/html/")))
-
 }
 
 func handleRouter(service daemon.Service, router *http.ServeMux, prefix string, h func(service daemon.Service, prefix string) http.Handler) {
