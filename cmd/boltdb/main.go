@@ -22,7 +22,7 @@ func main() {
 	registryService := registry.NewService()
 	daemonService := daemon.NewService(storageService, registryService)
 
-	cmd.RegisterAPIRoutes(daemonService)
+	cmd.RegisterRoutes(daemonService)
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }
