@@ -10,10 +10,14 @@ import (
 )
 
 // RegisterRoutes registers handlers/routers
-func RegisterRoutes(service daemon.Service) {
+func RegisterAPIRoutes(service daemon.Service) {
 	handleRouter(service, "/v2", server.NewRouter)
 	handleRouter(service, "/auth", accounts.NewRouter)
 	handleRouter(service, "/machinetypes", machinetypes.NewRouter)
+}
+
+func RegisterStaticRoutes(service daemon.Service) {
+	//TODO:  add handler for /static and templates/gen/index.html
 }
 
 func handleRouter(service daemon.Service, prefix string, h func(service daemon.Service, prefix string) http.Handler) {

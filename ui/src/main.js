@@ -3,8 +3,10 @@ Vue.config.productionTip = false
 
 import './plugins/vuetify'
 import './plugins/axios'
+// if ENV without-accounts==false
+// per default is accounts included
 import './plugins/account'
-
+// endif
 import './mixins/features'
 
 import router from './router'

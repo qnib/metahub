@@ -4,17 +4,45 @@ import (
 	"context"
 	"fmt"
 	"github.com/boltdb/bolt"
-	"github.com/ChristianKniep/metahub/pkg/storage"
+	"metahub/pkg/storage"
 	"log"
 	"time"
 )
 
-var db
+var db *bolt.DB
+
+func setupDB() error {
+	var err error
+	db, err = bolt.Open("my.db", 0600, nil)
+	if err != nil {
+		return fmt.Errorf("could not open db, %v", err)
+	}
+	err = db.Update(func(tx *bolt.Tx) error {
+		_, err := tx.CreateBucketIfNotExists([]byte("TOKENS"))
+		if err != nil {
+			return fmt.Errorf("could not create TOKENS bucket: %v", err)
+		}
+		_, err = tx.CreateBucketIfNotExists([]byte("USERS"))
+		if err != nil {
+			return fmt.Errorf("could not create USERS bucket: %v", err)
+		}
+		_, err = tx.CreateBucketIfNotExists([]byte("TYPES"))
+		if err != nil {
+			return fmt.Errorf("could not create TYPES bucket: %v", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("could not set up buckets, %v", err)
+	}
+	fmt.Println("DB Setup Done")
+	return nil
+}
 
 func init() {
-	db, err := bolt.Open("my.db", 0600, nil)
+	err := setupDB()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(err.Error())
 	}
 }
 
@@ -23,24 +51,13 @@ type accessTokenService struct {
 }
 
 func (s *accessTokenService) Get(token string) (*storage.AccessToken, error) {
-	b := tx.Bucket([]byte("MyBucket"))
-	name := "default"
-	err := b.Put([]byte(token), []byte(name))
 	//TODO: check at.Expiry?
 	return &storage.AccessToken{
-		AccountName: name,
+		AccountName: token,
 		Expiry:      time.Time{},
 	}, nil
 }
 
 func (s *accessTokenService) Put(token string, at storage.AccessToken) error {
-	accessTokenKey := datastore.NameKey(accessTokenEntityKind, token, nil)
-	e := accessToken{
-		AccountName: at.AccountName,
-		Expiry:      at.Expiry,
-	}
-	if _, err := s.client.Put(s.ctx, accessTokenKey, &e); err != nil {
-		return fmt.Errorf("error putting access token: %v", err)
-	}
 	return nil
 }

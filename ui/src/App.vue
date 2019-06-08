@@ -33,7 +33,7 @@
       <v-toolbar-title class="headline">{{$route.meta.title}}</v-toolbar-title>
       <router-view name="tools"></router-view>
       <v-spacer></v-spacer>
-      <v-toolbar-items>
+      <v-toolbar-items v-if="!noAuth">
         <v-btn v-if="!account" flat @click="loginClicked()">
           <span>Sign In</span>
         </v-btn>
@@ -66,14 +66,19 @@ export default {
   data() {
     return {
       drawer: undefined,
-      account: this.$account.getInfo()
+      account: this.$account.getInfo(),
+      noAuth: this.$account == undefined
     };
   },
   mounted() {
-    this.$account.$on("change", this.accountChanged);
+    if (this.$account) {
+      this.$account.$on("change", this.accountChanged);
+    }
   },
   beforeDestroy() {
-    this.$account.$off("change");
+    if (this.$account) {
+      this.$account.$off("change");
+    }
   },
   methods: {
     loginClicked() {

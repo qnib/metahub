@@ -46,24 +46,24 @@ const router = new Router({
         },
     ]
 })
-
-router.beforeEach((to, from, next) => {
-    if (to.matched.some(record => record.meta.requiresAuth)) {
-        const account = router.app.$account;
-        if (account.isLoggedIn()) {
-            next();
-        } else {
-            account.login(function () {
-                if (!account.isLoggedIn()) {
-                    next(false);
-                    return;
-                }
+if (router.app.$account == undefined) {
+    router.beforeEach((to, from, next) => {
+        if (to.matched.some(record => record.meta.requiresAuth)) {
+            const account = router.app.$account;
+            if (account.isLoggedIn()) {
                 next();
-            });
+            } else {
+                account.login(function () {
+                    if (!account.isLoggedIn()) {
+                        next(false);
+                        return;
+                    }
+                    next();
+                });
+            }
+        } else {
+            next();
         }
-    } else {
-        next();
-    }
-})
-
+    })
+}
 export default router;
