@@ -66,7 +66,7 @@ export default {
   data() {
     return {
       drawer: undefined,
-      account: this.$account.getInfo(),
+      account: this.$account && this.$account.getInfo(),
       noAuth: this.$account == undefined
     };
   },

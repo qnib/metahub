@@ -2,11 +2,10 @@
   <v-container pl-0 pr-0>
     <v-toolbar flat color="transparent" dense>
       <v-btn :to="{ name: 'new-machine-type'}" color="primary">
-        <v-icon left>add</v-icon>
-        Machine Type
+        <v-icon left>add</v-icon>Machine Type
       </v-btn>
       <v-spacer></v-spacer>
-      <v-progress-circular v-if="loading>0" :indeterminate="true" style="float: right;"></v-progress-circular>
+      <v-progress-circular v-if="loading" :indeterminate="true" style="float: right;"></v-progress-circular>
     </v-toolbar>
     <v-container
       pa-2
@@ -48,20 +47,27 @@ export default {
   data() {
     return {
       machineTypes: [],
-      loading: false,
+      loading: false
     };
   },
   mounted() {
-    this.loading++;
-    this.axios.get("/machinetypes/list").then(this.featuresReceived);
+    this.loading = true;
+    this.axios
+      .get("/machinetypes/list")
+      .then(this.featuresReceived)
+      .catch(this.listError);
   },
   methods: {
+    listError(error) {
+      this.loading = false;
+      alert(error);
+    },
     featuresReceived(response) {
-      this.loading--;
+      this.loading = false;
       this.machineTypes = response.data.machineTypes || [];
     },
     deleteMachineType(id) {
-      this.loading++;
+      this.loading = true;
       this.axios
         .post("/machinetypes/delete", {
           id: id
@@ -70,7 +76,7 @@ export default {
       this.machineTypes = this.machineTypes.filter(mt => mt.id != id);
     },
     machineTypeRemoved() {
-      this.loading--;
+      this.loading = false;
     }
   }
 };

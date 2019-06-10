@@ -7,9 +7,11 @@ import (
 	"metahub/pkg/storage"
 	"log"
 	"time"
+	"sync"
 )
 
 var db *bolt.DB
+var dbSync sync.Mutex
 
 func setupDB() error {
 	var err error
@@ -35,6 +37,7 @@ func setupDB() error {
 	if err != nil {
 		return fmt.Errorf("could not set up buckets, %v", err)
 	}
+	//dbSync=sync.
 	fmt.Println("DB Setup Done")
 	return nil
 }
@@ -52,6 +55,7 @@ type accessTokenService struct {
 
 func (s *accessTokenService) Get(token string) (*storage.AccessToken, error) {
 	//TODO: check at.Expiry?
+	log.Println(token)
 	return &storage.AccessToken{
 		AccountName: token,
 		Expiry:      time.Time{},

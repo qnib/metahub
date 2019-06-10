@@ -5,7 +5,8 @@ import './plugins/vuetify'
 import './plugins/axios'
 // if ENV without-accounts==false
 // per default is accounts included
-import './plugins/account'
+//import './plugins/account'
+import './plugins/fakeAccount'
 // endif
 import './mixins/features'
 

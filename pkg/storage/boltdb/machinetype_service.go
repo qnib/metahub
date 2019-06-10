@@ -3,12 +3,10 @@ package boltdb
 import (
 	"context"
 	"metahub/pkg/storage"
-	"github.com/boltdb/bolt"
 )
 
 type machineTypeService struct {
 	ctx    context.Context
-	db     *bolt.DB
 }
 
 func formatLogin(accountName string, login string) {
@@ -22,18 +20,18 @@ func (s *machineTypeService) GetByID(accountName string, id int64) (*storage.Mac
 		DisplayName: accountName,
 		Features:    []string{},
 		Password:    accountName,
-		Login:       accountName,
+		Login:       accountName+"-"+accountName,
 	}, nil
 }
 
 func (s *machineTypeService) GetByUsername(username string) (*storage.MachineType, error) {
 	return &storage.MachineType{
-		ID:          0,
-		DisplayName: username,
-		Features:    []string{},
-		Password:    username,
-		Login:       username,
-	}, nil
+		ID         : 1,
+		DisplayName : "halo",
+		Features    :[]string{"cpu:broadwell"},
+		Login       :"DUMMY-halo",
+		Password    :"DUMMY-test",
+}, nil
 }
 
 func (s *machineTypeService) Add(accountName string, mt *storage.MachineType) error {
@@ -45,7 +43,15 @@ func (s *machineTypeService) Delete(accountName string, id int64) error {
 }
 
 func (s *machineTypeService) List(accountName string) ([]storage.MachineType, error) {
-	result := make([]storage.MachineType, 0)
+	result := []storage.MachineType{
+		storage.MachineType{
+			ID         : 1,
+			DisplayName : "halo",
+			Features    :[]string{"cpu:broadwell"},
+			Login       :accountName+"-halo",
+			Password    :accountName+"-test",
+				},
+	}
 	return result, nil
 }
 
