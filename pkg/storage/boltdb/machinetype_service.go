@@ -16,10 +16,10 @@ func formatLogin(accountName string, login string) {
 func (s *machineTypeService) GetByID(accountName string, id int64) (*storage.MachineType, error) {
 	mt := &storage.MachineType{}
 	switch id {
-	case 1: mt = mType1
-	case 2: mt = mType2
-	case 3: mt = mType3
-	case 4: mt = mType4
+	case 1: mt = &mType1
+	case 2: mt = &mType2
+	case 3: mt = &mType3
+	case 4: mt = &mType4
 	}
 	return mt, nil
 }
@@ -27,7 +27,7 @@ func (s *machineTypeService) GetByID(accountName string, id int64) (*storage.Mac
 func (s *machineTypeService) GetByUsername(username string) (*storage.MachineType, error) {
 	switch username {
 	case user+"-type1":
-			return &mType1, nil
+		return &mType1, nil
 	case user+"-type2":
 		return &mType2, nil
 	case user+"-type3":
