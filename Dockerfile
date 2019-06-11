@@ -19,12 +19,13 @@ WORKDIR /go/metahub/cmd/boltdb
 # static build
 ENV CGO_ENABLED=0 GOOS=linux
 RUN go build -a -ldflags '-extldflags "-static"' .
+EXPOSE 8080
 
 # Go binary serves the ui web content
 FROM scratch
+ENV PORT=80
 COPY --from=go /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=ui /go/metahub/static /srv/html/static
 COPY --from=ui /go/metahub/templates/gen/index.html /srv/html/
 COPY --from=go /go/metahub/cmd/boltdb/boltdb /usr/bin/
-WORKDIR /usr/bin/
-CMD boltdb
+ENTRYPOINT ["/usr/bin/boltdb"]
