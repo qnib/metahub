@@ -14,24 +14,30 @@ func formatLogin(accountName string, login string) {
 }
 
 func (s *machineTypeService) GetByID(accountName string, id int64) (*storage.MachineType, error) {
-
-	return &storage.MachineType{
-		ID:          id,
-		DisplayName: accountName,
-		Features:    []string{},
-		Password:    accountName,
-		Login:       accountName+"-"+accountName,
-	}, nil
+	mt := &storage.MachineType{}
+	switch id {
+	case 1: mt = mType1
+	case 2: mt = mType2
+	case 3: mt = mType3
+	case 4: mt = mType4
+	}
+	return mt, nil
 }
 
 func (s *machineTypeService) GetByUsername(username string) (*storage.MachineType, error) {
-	return &storage.MachineType{
-		ID         : 1,
-		DisplayName : "halo",
-		Features    :[]string{"cpu:broadwell"},
-		Login       :"DUMMY-halo",
-		Password    :"DUMMY-test",
-}, nil
+	switch username {
+	case user+"-type1":
+			return &mType1, nil
+	case user+"-type2":
+		return &mType2, nil
+	case user+"-type3":
+		return &mType3, nil
+	case user+"-type4":
+		return &mType4, nil
+	default:
+		return nil, nil
+	}
+
 }
 
 func (s *machineTypeService) Add(accountName string, mt *storage.MachineType) error {
@@ -44,13 +50,10 @@ func (s *machineTypeService) Delete(accountName string, id int64) error {
 
 func (s *machineTypeService) List(accountName string) ([]storage.MachineType, error) {
 	result := []storage.MachineType{
-		storage.MachineType{
-			ID         : 1,
-			DisplayName : "halo",
-			Features    :[]string{"cpu:broadwell"},
-			Login       :accountName+"-halo",
-			Password    :accountName+"-test",
-				},
+		mType1,
+		mType2,
+		mType3,
+		mType4,
 	}
 	return result, nil
 }

@@ -10,7 +10,7 @@ export default {
     },
     getInfo() {
       return {
-        displayName: "dummy"
+        displayName: "qnib"
       };
     },
     login(cb) {
