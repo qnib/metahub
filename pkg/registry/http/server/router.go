@@ -14,7 +14,7 @@ func NewRouter(service daemon.Service, pathPrefix string) http.Handler {
 	router.Use(machinetypes.AuthMiddleware(service))
 	router.Handle(pathPrefix+"/{image}/manifests/{reference}", getRegistryHandler(service)).Methods("GET")
 	router.Handle(pathPrefix+"/{repo}/{image}/manifests/{reference}", getRegistryHandler(service)).Methods("GET")
-	router.Handle(pathPrefix+"/{image}/blobs/{reference}", getBlobsHandler(service)).Methods("GET")
+	router.Handle(pathPrefix+"/{image}/blobs/{reference}", getCachedBlobsHandler(service)).Methods("GET")
 	router.Handle(pathPrefix+"/{repo}/{image}/blobs/{reference}", getBlobsHandler(service)).Methods("GET")
 	router.Handle(pathPrefix+"/", getBaseHandler(service)).Methods("GET")
 	return router

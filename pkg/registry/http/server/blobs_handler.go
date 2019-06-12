@@ -74,5 +74,6 @@ func getCachedBlobsHandler(service daemon.Service) http.Handler {
 		log.Printf("error getting cache client: %v", err)
 		return blobHandler
 	}
+	log.Println("Create cached blobHandler")
 	return cacheClient.Middleware(blobHandler)
 }
