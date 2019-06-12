@@ -7,16 +7,16 @@ import (
 	"metahub/pkg/registry"
 	"net/http"
 	"strconv"
-
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	digest "github.com/opencontainers/go-digest"
+	"github.com/victorspringer/http-cache"
+	"github.com/victorspringer/http-cache/adapter/redis"
+	"time"
 )
 
 func getBlobsHandler(service daemon.Service) http.Handler {
-	//storageService := env.Storage()
-
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	blobHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
 
@@ -53,4 +53,26 @@ func getBlobsHandler(service daemon.Service) http.Handler {
 			return
 		}
 	})
+	return blobHandler
+}
+
+
+func getCachedBlobsHandler(service daemon.Service) http.Handler {
+	blobHandler := getBlobsHandler(service)
+
+	ringOpt := &redis.RingOptions{
+		Addrs: map[string]string{
+			"server": ":6379",
+		},
+	}
+	cacheClient, err := cache.NewClient(
+		cache.ClientWithAdapter(redis.NewAdapter(ringOpt)),
+		cache.ClientWithTTL(10 * time.Minute),
+		cache.ClientWithRefreshKey("opn"),
+	)
+	if err != nil {
+		log.Printf("error getting cache client: %v", err)
+		return blobHandler
+	}
+	return cacheClient.Middleware(blobHandler)
 }
