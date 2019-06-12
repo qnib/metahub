@@ -23,6 +23,8 @@ func (s *machineTypeService) GetByID(accountName string, id int64) (mt *storage.
 	if _, b := os.LookupEnv("STATIC_MACHINES");b {
 		log.Println("Environment STATIC_MACHINES is set: Hardcoded types are served")
 		switch id {
+		case 0:
+			mt = &mType0
 		case 1:
 			mt = &mType1
 		case 2:
@@ -64,6 +66,8 @@ func (s *machineTypeService) GetByUsername(username string) (mt *storage.Machine
 	if _, b := os.LookupEnv("STATIC_MACHINES");b {
 		log.Println("Environment STATIC_MACHINES is set: Serve static machine type")
 		switch username {
+		case user+"-type0":
+			return &mType0, nil
 		case user+"-type1":
 			return &mType1, nil
 		case user+"-type2":
@@ -109,6 +113,7 @@ func (s *machineTypeService) List(accountName string) ([]storage.MachineType, er
 	if _, b := os.LookupEnv("STATIC_MACHINES");b {
 		log.Println("Environment STATIC_MACHINES is set: Serve static machine type")
 		return []storage.MachineType{
+			mType0,
 			mType1,
 			mType2,
 			mType3,

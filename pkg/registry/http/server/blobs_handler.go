@@ -17,6 +17,7 @@ import (
 
 func getBlobsHandler(service daemon.Service) http.Handler {
 	blobHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Within getBlobsHandler()")
 		ctx := r.Context()
 		vars := mux.Vars(r)
 
@@ -67,8 +68,8 @@ func getCachedBlobsHandler(service daemon.Service) http.Handler {
 	}
 	cacheClient, err := cache.NewClient(
 		cache.ClientWithAdapter(redis.NewAdapter(ringOpt)),
-		cache.ClientWithTTL(10 * time.Minute),
-		cache.ClientWithRefreshKey("opn"),
+		cache.ClientWithTTL(10 * time.Second),
+		cache.ClientWithRefreshKey("rk"),
 	)
 	if err != nil {
 		log.Printf("error getting cache client: %v", err)
