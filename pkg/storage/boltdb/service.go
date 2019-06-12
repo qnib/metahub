@@ -2,46 +2,30 @@ package boltdb
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"metahub/pkg/storage"
+	"os"
+	"sync"
+	"github.com/boltdb/bolt"
+
 )
 
-// Consts for protoype
-const (
-	user = "qnib"
-	accountName = user
-)
-var (
-	mType1 = storage.MachineType{
-		ID         : 1,
-		DisplayName : "type1",
-		Features    : []string{"cpu:broadwell"},
-		Login       : user+"-type1",
-		Password    : user+"-type1",
-	}
-	mType2 = storage.MachineType{
-		ID         : 2,
-		DisplayName : "type2",
-		Features    : []string{"cpu:skylake"},
-		Login       : user+"-type2",
-		Password    : user+"-type2",
-	}
-	mType3 = storage.MachineType{
-		ID         : 3,
-		DisplayName : "type3",
-		Features    : []string{"cpu:coffelake"},
-		Login       : user+"-type3",
-		Password    : user+"-type3",
-	}
-	mType4 = storage.MachineType{
-		ID         : 4,
-		DisplayName : "type4",
-		Features    : []string{"cpu:broadwell","nvcap:5.2"},
-		Login       : user+"-type4",
-		Password    : user+"-type4",
-	}
-)
+var db *bolt.DB
+var dbSync sync.Mutex
 
-// NewService returns a new storage.Service for GCP Cloud Datastore
+func init() {
+	if _, b := os.LookupEnv("STATIC_MACHINES");b {
+		log.Println("Environment STATIC_MACHINES is set: Serve static machine type")
+	} else {
+		err := setupDB()
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+	}
+}
+
+// NewService returns a new storage.Service for boltdb
 func NewService() storage.Service {
 	return &service{}
 }
@@ -66,3 +50,35 @@ func (s *service) AccountService(ctx context.Context) (storage.AccountService, e
 		ctx:    ctx,
 	}, nil
 }
+
+func setupDB() error {
+	var err error
+	dbSync.Lock()
+	defer dbSync.Unlock()
+	db, err = bolt.Open("my.db", 0600, nil)
+	if err != nil {
+		return fmt.Errorf("could not open db, %v", err)
+	}
+	err = db.Update(func(tx *bolt.Tx) error {
+		_, err := tx.CreateBucketIfNotExists([]byte("TOKENS"))
+		if err != nil {
+			return fmt.Errorf("could not create TOKENS bucket: %v", err)
+		}
+		_, err = tx.CreateBucketIfNotExists([]byte("USERS"))
+		if err != nil {
+			return fmt.Errorf("could not create USERS bucket: %v", err)
+		}
+		_, err = tx.CreateBucketIfNotExists([]byte("TYPES"))
+		if err != nil {
+			return fmt.Errorf("could not create TYPES bucket: %v", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("could not set up buckets, %v", err)
+	}
+
+	fmt.Println("DB Setup Done")
+	return nil
+}
+

@@ -28,4 +28,6 @@ COPY --from=go /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=ui /go/metahub/static /srv/html/static
 COPY --from=ui /go/metahub/templates/gen/index.html /srv/html/
 COPY --from=go /go/metahub/cmd/boltdb/boltdb /usr/bin/
+VOLUME /data/
+WORKDIR /data/
 ENTRYPOINT ["/usr/bin/boltdb"]

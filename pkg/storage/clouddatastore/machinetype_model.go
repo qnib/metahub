@@ -8,3 +8,4 @@ type machineTypeModel struct {
 	Login       string   `datastore:"login"`
 	Password    string   `datastore:"password,noindex"`
 }
+
