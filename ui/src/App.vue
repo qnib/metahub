@@ -26,6 +26,15 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-divider inset></v-divider>
+        <v-list-tile avatar ripple to="/manifestlist">
+          <v-list-tile-avatar>
+            <v-icon>dashboard</v-icon>
+          </v-list-tile-avatar>
+          <v-list-tile-content>
+            <v-list-tile-title>Manifest Lists</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-divider inset></v-divider>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar app>

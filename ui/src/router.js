@@ -6,6 +6,8 @@ Vue.use(Router)
 import Welcome from "./views/Welcome";
 import MachineTypes from "./views/MachineTypes";
 import MachineType from "./views/MachineType"
+import ManifestLists from "./views/ManifestLists";
+import ManifestList from "./views/ManifestList"
 
 const router = new Router({
     mode: 'hash',
@@ -42,6 +44,35 @@ const router = new Router({
             meta: {
                 title: "Machine Type details",
                 requiresAuth: true,
+            }
+        },
+        {
+            name: "manifest-lists",
+            path: '/manifestlists',
+            components: {
+                default: MachineTypes,
+            },
+            meta: {
+                title: "Manifest Lists",
+                requiresAuth: false,
+            }
+        },
+        {
+            name: "edit-manifest-list",
+            path: '/manifestlists/edit/:id',
+            component: MachineType,
+            meta: {
+                title: "Manifest List details",
+                requiresAuth: false,
+            }
+        },
+        {
+            name: "new-manifest-list",
+            path: '/manifestlists/new',
+            component: MachineType,
+            meta: {
+                title: "Manifest List details",
+                requiresAuth: false,
             }
         },
     ]
