@@ -48,3 +48,9 @@ var (
 	// Dummy ManifestLists
 	mlQBench, _ = storage.NewManifestList("qnib/bench", "test", mfQFeatGeneric, mfQFeatBroadwell, mfQFeatSkylake)
 )
+
+func getMachineTypes() []storage.MachineType {
+	return []storage.MachineType{
+		mType1, mType2, mType3, mType4,
+	}
+}

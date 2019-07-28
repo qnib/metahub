@@ -31,7 +31,6 @@ func (s *manifestListService) Update(ml *storage.ManifestList) (err error) {
 
 // List is the only function that does something... :)
 func (s *manifestListService) List() ([]*storage.ManifestList, error) {
-	result := []*storage.ManifestList{}
 	return []*storage.ManifestList{
 		&mlQBench,
 	}, nil
