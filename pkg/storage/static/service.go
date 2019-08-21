@@ -26,6 +26,12 @@ func NewService() storage.Service {
 type service struct {
 }
 
+func (s *service) ManifestListService(ctx context.Context) (storage.ManifestListService, error) {
+	return &manifestListService{
+		ctx: ctx,
+	}, nil
+}
+
 func (s *service) MachineTypeService(ctx context.Context) (storage.MachineTypeService, error) {
 	return &machineTypeService{
 		ctx: ctx,

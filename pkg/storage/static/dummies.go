@@ -41,13 +41,19 @@ var (
 		Password:    user + "-type4",
 	}
 	// Dummy Manifests
-	mfUbuntu, _         = storage.NewManifest("ubuntu", "latest", "linux", "amd64")
+	mfUbuntuAMD64, _    = storage.NewManifest("ubuntu", "latest", "linux", "amd64")
+	mfUbuntuPPC, _      = storage.NewManifest("ubuntu", "latest", "linux", "ppc64le")
 	mfQFeatGeneric, _   = storage.NewManifest("qnib/plain-featuretest", "generic", "linux", "amd64")
 	mfQFeatBroadwell, _ = storage.NewManifest("qnib/plain-featuretest", "cpu-broadwell", "linux", "amd64", "cpu:broadwell")
 	mfQFeatSkylake, _   = storage.NewManifest("qnib/plain-featuretest", "cpu-skylake", "linux", "amd64", "cpu:skylake")
 	// Dummy ManifestLists
+	mlUbuntu, _ = storage.NewManifestList("ubuntu", "18.04", mfUbuntuAMD64, mfUbuntuPPC)
 	mlQBench, _ = storage.NewManifestList("qnib/bench", "test", mfQFeatGeneric, mfQFeatBroadwell, mfQFeatSkylake)
 )
+
+func getDummyManifestLists() []storage.ManifestList {
+	return []storage.ManifestList{mlQBench, mlUbuntu}
+}
 
 func getMachineTypes() []storage.MachineType {
 	return []storage.MachineType{

@@ -33,8 +33,9 @@ func getRegistryHandler(service daemon.Service) http.Handler {
 		reference := vars["reference"]
 
 		// get manifest from registry service
-		registryService := context.Get(r, "registryService").(registry.Service)
-		manifest, err := registryService.GetManifest(ctx, repository, reference)
+		//registryService := context.Get(r, "registryService").(registry.Service)
+		storageService := context.Get(r, "storageService").(registry.Service)
+		manifest, err := storageService.GetManifest(ctx, repository, reference)
 		if err != nil {
 			log.Printf("error getting manifest: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)

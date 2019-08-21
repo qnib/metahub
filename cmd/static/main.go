@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"log"
 	"metahub/pkg/daemon"
-	registry "metahub/pkg/registry/http/client"
-	"metahub/pkg/storage/static"
+	dynReg "metahub/pkg/registry/dynamic"
+	httpReg "metahub/pkg/registry/http/client"
+	stoReg "metahub/pkg/storage/static"
 	"net/http"
 	"os"
 
@@ -26,8 +27,10 @@ func main() {
 		port = "8080"
 	}
 
-	storageService := static.NewService()
-	registryService := registry.NewService()
+	//mlStorageSvc := static.()
+	inner := httpReg.NewService()
+	registryService := dynReg.NewService(inner, mlStorageSvc)
+	storageService := stoReg.NewService()
 	daemonService := daemon.NewService(storageService, registryService)
 
 	router := cmd.RegisterRoutes(daemonService)

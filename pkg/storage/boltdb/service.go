@@ -7,15 +7,15 @@ import (
 	"metahub/pkg/storage"
 	"os"
 	"sync"
-	"github.com/boltdb/bolt"
 
+	"github.com/boltdb/bolt"
 )
 
 var db *bolt.DB
 var dbSync sync.Mutex
 
 func init() {
-	if _, b := os.LookupEnv("STATIC_MACHINES");b {
+	if _, b := os.LookupEnv("STATIC_MACHINES"); b {
 		log.Println("Environment STATIC_MACHINES is set: Serve static machine type")
 	} else {
 		err := setupDB()
@@ -35,19 +35,19 @@ type service struct {
 
 func (s *service) MachineTypeService(ctx context.Context) (storage.MachineTypeService, error) {
 	return &machineTypeService{
-		ctx:    ctx,
+		ctx: ctx,
 	}, nil
 }
 
 func (s *service) AccessTokenService(ctx context.Context) (storage.AccessTokenService, error) {
 	return &accessTokenService{
-		ctx:    ctx,
+		ctx: ctx,
 	}, nil
 }
 
 func (s *service) AccountService(ctx context.Context) (storage.AccountService, error) {
 	return &accountService{
-		ctx:    ctx,
+		ctx: ctx,
 	}, nil
 }
 
@@ -81,4 +81,3 @@ func setupDB() error {
 	fmt.Println("DB Setup Done")
 	return nil
 }
-

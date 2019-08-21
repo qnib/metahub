@@ -27,7 +27,6 @@ type ManifestList struct {
 	RepoName  string     `json:"repo"`
 	TagName   string     `json:"tag"`
 	Manifests []Manifest `json:"manifests,omitempty"`
-	// TODO: Do we need user/password to safeguard ManifestLists - might be just safeguarded vai Manifest
 }
 
 // ToBytes returns a bytearray
