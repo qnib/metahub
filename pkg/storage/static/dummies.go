@@ -48,6 +48,15 @@ var (
 		Login:       user + "-type4",
 		Password:    user + "-type4",
 	}
+	// Dummy Manifests
+	mfUbuntuAMD64, _    = storage.NewManifest("ubuntu", "latest", "linux", "amd64")
+	mfUbuntuPPC, _      = storage.NewManifest("ubuntu", "latest", "linux", "ppc64le")
+	mfQFeatGeneric, _   = storage.NewManifest("qnib/plain-featuretest", "generic", "linux", "amd64")
+	mfQFeatBroadwell, _ = storage.NewManifest("qnib/plain-featuretest", "cpu-broadwell", "linux", "amd64", "cpu:broadwell")
+	mfQFeatSkylake, _   = storage.NewManifest("qnib/plain-featuretest", "cpu-skylake", "linux", "amd64", "cpu:skylake")
+	// Dummy ManifestLists
+	mlUbuntu, _ = storage.NewManifestList("ubuntu", "dynamic", mfUbuntuAMD64, mfUbuntuPPC)
+	mlQBench, _ = storage.NewManifestList("qnib/bench", "dynamic", mfQFeatGeneric, mfQFeatBroadwell, mfQFeatSkylake)
 )
 
 func getMachineTypes() []storage.MachineType {
@@ -87,4 +96,8 @@ func getByID(id int64) (mt *storage.MachineType, err error) {
 		mt = &mType4
 	}
 	return mt, nil
+}
+
+func getDummyManifestLists() []storage.ManifestList {
+	return []storage.ManifestList{mlQBench, mlUbuntu}
 }

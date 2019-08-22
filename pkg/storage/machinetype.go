@@ -14,6 +14,7 @@ type MachineType struct {
 	Password    string   `json:"password"`
 }
 
+// ToBytes create a byte-stream
 func (mtm MachineType) ToBytes() []byte {
 	reqBodyBytes := new(bytes.Buffer)
 	json.NewEncoder(reqBodyBytes).Encode(mtm)
