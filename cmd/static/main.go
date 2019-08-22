@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"metahub/pkg/daemon"
-	dynReg "metahub/pkg/registry/dynamic"
 	httpReg "metahub/pkg/registry/http/client"
 	stoReg "metahub/pkg/storage/static"
 	"net/http"
@@ -28,10 +27,14 @@ func main() {
 	}
 
 	//mlStorageSvc := static.()
-	inner := httpReg.NewService()
-	registryService := dynReg.NewService(inner, mlStorageSvc)
+	// Inner service to ask the external Registry
+	dockerHub := httpReg.NewService()
+	// using the inner service to create dynamic backend, which might provide Manifestlist without asking the external registry
 	storageService := stoReg.NewService()
-	daemonService := daemon.NewService(storageService, registryService)
+	// create registry service to pass to metahub daemon
+	//dynamicManifestLists := dynReg.NewService(dockerHub, storageService)
+	dynamicManifestLists := dockerHub
+	daemonService := daemon.NewService(storageService, dynamicManifestLists)
 
 	router := cmd.RegisterRoutes(daemonService)
 

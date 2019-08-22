@@ -11,15 +11,15 @@ import (
 )
 
 type service struct {
-	inner        registry.Service
-	ManifestList storage.ManifestListService
+	inner      registry.Service
+	storageSvc storage.Service
 }
 
 // NewService returns a new registry service, wraping another registry Service, to filter image manifests
-func NewService(inner registry.Service, manifestList storage.ManifestListService) registry.Service {
+func NewService(inner registry.Service, storageSvc storage.Service) registry.Service {
 	return &service{
-		inner:        inner,
-		ManifestList: manifestList,
+		inner:      inner,
+		storageSvc: storageSvc,
 	}
 }
 
@@ -27,13 +27,18 @@ func (s *service) GetBlob(ctx context.Context, repositoryString string, d digest
 	return s.inner.GetBlob(ctx, repositoryString, d)
 }
 func (s *service) GetManifest(ctx context.Context, repositoryString string, referenceString string) (m registry.Manifest, err error) {
-	ml, err := s.ManifestList.Get("qnib", repositoryString, referenceString)
-	if err != nil {
-		return m, err
-	}
-	if ml == nil {
-		return s.inner.GetManifest(ctx, repositoryString, referenceString)
-	}
-	log.Printf("Found ManifestList locally: %v\n", ml)
+	/*
+		// Checks if the incoming request can be served with a dynamic ML
+		ml, err := s.storageSvc.GetManifest("qnib", repositoryString, referenceString)
+		if err != nil {
+			return m, err
+		}
+		if ml == nil {
+			// If no dynamic ML is found, ask the inner registry
+			return s.inner.GetManifest(ctx, repositoryString, referenceString)
+		}
+		log.Printf("Found ManifestList locally: %v\n", ml)
+	*/
+	log.Printf("Skip Dynamic Layer for: %s:%s\n", repositoryString, referenceString)
 	return s.inner.GetManifest(ctx, repositoryString, referenceString)
 }

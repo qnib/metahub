@@ -50,6 +50,7 @@ func AuthMiddleware(service daemon.Service) func(http.Handler) http.Handler {
 			}
 
 			backendRegistryService := service.Registry()
+			//log.Printf("RegistryService: %v", backendRegistryService)
 			filterRegistryService := filter.NewService(backendRegistryService, *mt)
 			context.Set(r, "registryService", filterRegistryService)
 

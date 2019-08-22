@@ -10,7 +10,7 @@ RUN npm run build
 
 FROM golang:1.12 AS go
 WORKDIR /go/metahub
-ARG MH_BACKEND=boltdb
+ARG MH_BACKEND=static
 COPY ./go.mod .
 COPY ./go.sum .
 RUN go mod download

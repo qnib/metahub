@@ -12,6 +12,13 @@ const (
 
 // Dummy MachineTypes
 var (
+	mType0 = storage.MachineType{
+		ID:          0,
+		DisplayName: "type0",
+		Features:    []string{},
+		Login:       user + "-type0",
+		Password:    user + "-type0",
+	}
 	mType1 = storage.MachineType{
 		ID:          1,
 		DisplayName: "type1",
@@ -47,8 +54,8 @@ var (
 	mfQFeatBroadwell, _ = storage.NewManifest("qnib/plain-featuretest", "cpu-broadwell", "linux", "amd64", "cpu:broadwell")
 	mfQFeatSkylake, _   = storage.NewManifest("qnib/plain-featuretest", "cpu-skylake", "linux", "amd64", "cpu:skylake")
 	// Dummy ManifestLists
-	mlUbuntu, _ = storage.NewManifestList("ubuntu", "18.04", mfUbuntuAMD64, mfUbuntuPPC)
-	mlQBench, _ = storage.NewManifestList("qnib/bench", "test", mfQFeatGeneric, mfQFeatBroadwell, mfQFeatSkylake)
+	mlUbuntu, _ = storage.NewManifestList("ubuntu", "latest", mfUbuntuAMD64, mfUbuntuPPC)
+	mlQBench, _ = storage.NewManifestList("qnib/bench", "latest", mfQFeatGeneric, mfQFeatBroadwell, mfQFeatSkylake)
 )
 
 func getDummyManifestLists() []storage.ManifestList {
@@ -57,6 +64,6 @@ func getDummyManifestLists() []storage.ManifestList {
 
 func getMachineTypes() []storage.MachineType {
 	return []storage.MachineType{
-		mType1, mType2, mType3, mType4,
+		mType0, mType1, mType2, mType3, mType4,
 	}
 }
