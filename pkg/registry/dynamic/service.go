@@ -38,5 +38,14 @@ func (s *service) GetManifest(ctx context.Context, repositoryString string, refe
 		return s.inner.GetManifest(ctx, repositoryString, referenceString)
 	}
 	log.Printf("Got a ManifestList back (%v); but how to I createa  Manifest out of it?\n", ml)
+	/******* from filter service:
+	var manifest distribution.Manifest
+	mediaType, payload, err := manifest.Payload()
+	m = registry.Manifest{
+		Data:        payload,
+		ContentType: mediaType,
+	}
+	return m, nil
+	*/
 	return
 }
