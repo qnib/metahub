@@ -10,6 +10,13 @@ const (
 
 // Dummy MachineTypes
 var (
+	mType0 = storage.MachineType{
+		ID:          0,
+		DisplayName: "type0",
+		Features:    []string{},
+		Login:       user + "-type0",
+		Password:    user + "-type0",
+	}
 	mType1 = storage.MachineType{
 		ID:          1,
 		DisplayName: "type1",
@@ -42,7 +49,7 @@ var (
 
 func getMachineTypes() []storage.MachineType {
 	return []storage.MachineType{
-		mType1, mType2, mType3, mType4,
+		mType0, mType1, mType2, mType3, mType4,
 	}
 
 }
