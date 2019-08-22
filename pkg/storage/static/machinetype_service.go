@@ -2,7 +2,6 @@ package static
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"metahub/pkg/storage"
 )
@@ -17,38 +16,12 @@ func formatLogin(accountName string, login string) {
 
 func (s *machineTypeService) GetByID(accountName string, id int64) (mt *storage.MachineType, err error) {
 	log.Printf("GetByID(%s, %d)\n", accountName, id)
-	switch id {
-	case 0:
-		mt = &mType0
-	case 1:
-		mt = &mType1
-	case 2:
-		mt = &mType2
-	case 3:
-		mt = &mType3
-	case 4:
-		mt = &mType4
-	}
-	return mt, nil
-
+	return getByID(id)
 }
 
 func (s *machineTypeService) GetByUsername(username string) (mt *storage.MachineType, err error) {
 	log.Printf("GetByUsername(%s)\n", username)
-	switch username {
-	case user + "-type0":
-		return &mType0, nil
-	case user + "-type1":
-		return &mType1, nil
-	case user + "-type2":
-		return &mType2, nil
-	case user + "-type3":
-		return &mType3, nil
-	case user + "-type4":
-		return &mType4, nil
-	default:
-		panic(fmt.Errorf("Could not find username: %s", username))
-	}
+	return getByUsername(username)
 }
 
 func (s *machineTypeService) Add(accountName string, mt *storage.MachineType) (err error) {

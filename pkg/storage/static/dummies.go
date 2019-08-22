@@ -1,6 +1,9 @@
 package static
 
-import "metahub/pkg/storage"
+import (
+	"fmt"
+	"metahub/pkg/storage"
+)
 
 // Consts for protoype
 const (
@@ -51,5 +54,37 @@ func getMachineTypes() []storage.MachineType {
 	return []storage.MachineType{
 		mType0, mType1, mType2, mType3, mType4,
 	}
+}
 
+func getByUsername(username string) (mt *storage.MachineType, err error) {
+	switch username {
+	case user + "-type0":
+		return &mType0, nil
+	case user + "-type1":
+		return &mType1, nil
+	case user + "-type2":
+		return &mType2, nil
+	case user + "-type3":
+		return &mType3, nil
+	case user + "-type4":
+		return &mType4, nil
+	default:
+		panic(fmt.Errorf("Could not find username: %s", username))
+	}
+}
+
+func getByID(id int64) (mt *storage.MachineType, err error) {
+	switch id {
+	case 0:
+		mt = &mType0
+	case 1:
+		mt = &mType1
+	case 2:
+		mt = &mType2
+	case 3:
+		mt = &mType3
+	case 4:
+		mt = &mType4
+	}
+	return mt, nil
 }
