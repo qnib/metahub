@@ -22,7 +22,7 @@ RUN go build -a -ldflags '-extldflags "-static"' .
 EXPOSE 8080
 
 # Go binary serves the ui web content
-FROM scratch
+FROM ubuntu:18.04
 ENV PORT=80
 COPY --from=go /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=ui /go/metahub/static /srv/html/static
