@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/boltdb/bolt"
 	"log"
 	"metahub/pkg/storage"
 	"os"
+
+	"github.com/boltdb/bolt"
 )
 
 type machineTypeService struct {
@@ -38,7 +39,6 @@ func (s *machineTypeService) GetByID(accountName string, id int64) (mt *storage.
 	db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
 		b := tx.Bucket([]byte("TYPES"))
-
 		c := b.Cursor()
 		var mType storage.MachineType
 		for k, v := c.First(); k != nil; k, v = c.Next() {
@@ -46,6 +46,7 @@ func (s *machineTypeService) GetByID(accountName string, id int64) (mt *storage.
 				panic(err)
 			}
 			if mType.ID == id {
+				log.Printf("Found the entry in TYPES: %v", mType)
 				foundID = true
 				mt = &mType
 				return err
@@ -90,12 +91,14 @@ func (s *machineTypeService) GetByUsername(username string) (mt *storage.Machine
 				panic(err)
 			}
 			if mType.Login == username {
-				log.Printf("Found user: %v\n", mType)
+				log.Printf("Found mType by user: %v\n", mType)
 				mt = &mType
+				break
 			}
 		}
 		return nil
 	})
+	log.Printf("Return mt: %v\n", mt)
 	return mt, nil
 }
 
@@ -125,6 +128,7 @@ func (s *machineTypeService) Delete(accountName string, id int64) error {
 }
 
 func (s *machineTypeService) List(accountName string) ([]storage.MachineType, error) {
+	log.Printf("mt.List(accountName=%s)", accountName)
 	result := []storage.MachineType{}
 	if _, b := os.LookupEnv("STATIC_MACHINES"); b {
 		log.Println("Environment STATIC_MACHINES is set: Serve static machine type")
@@ -138,13 +142,13 @@ func (s *machineTypeService) List(accountName string) ([]storage.MachineType, er
 	db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
 		b := tx.Bucket([]byte("TYPES"))
-
 		c := b.Cursor()
 		var mt storage.MachineType
 		for k, v := c.First(); k != nil; k, v = c.Next() {
 			if err := json.Unmarshal(v, &mt); err != nil {
 				panic(err)
 			}
+			log.Printf(">> Add MT to result: %v", mt)
 			result = append(result, mt)
 		}
 		return nil

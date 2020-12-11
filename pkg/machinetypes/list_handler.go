@@ -31,7 +31,7 @@ func getListHandler(service daemon.Service) http.Handler {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-
+		log.Printf("Get %d machineTypes back", len(machineTypes))
 		response := struct {
 			MachineTypes []storage.MachineType `json:"machineTypes,omitempty"`
 		}{

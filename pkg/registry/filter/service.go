@@ -41,8 +41,10 @@ func (s *service) GetBlob(ctx context.Context, repositoryString string, d digest
 }
 
 func (s *service) GetManifest(ctx context.Context, repositoryString string, referenceString string) (registry.Manifest, error) {
+	log.Println("> In GetManifest()")
 	m, err := s.inner.GetManifest(ctx, repositoryString, referenceString)
 	if err != nil {
+		log.Printf("  >> s.inner.GetManifest() returned without error")
 		return m, err
 	}
 	unmarshaledManifest, _, err := distribution.UnmarshalManifest(m.ContentType, m.Data)
@@ -51,6 +53,7 @@ func (s *service) GetManifest(ctx context.Context, repositoryString string, refe
 	}
 	manifestList, ok := unmarshaledManifest.(*manifestListSchema.DeserializedManifestList)
 	if !ok {
+		log.Println("unmarshaledManifest.(*manifestListSchema.DeserializedManifestList) was not ok")
 		return m, nil
 	}
 	manifestList, err = s.filterManifestsFromList(manifestList)

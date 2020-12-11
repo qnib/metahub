@@ -1,0 +1,25 @@
+version: "3.7"
+services:
+  caddy:
+    image: caddy:2.0.0-alpine
+    ports:
+      - 80:80
+      - 443:443
+    configs:
+      - source: caddyfile
+        target: /etc/caddy/Caddyfile
+  metahub:
+    image: public.ecr.aws/a4y4t9s0/metahub:latest
+    environment:
+      - PORT=8080
+      - PASSWORD_IGNORE=true
+  metahub-static:
+    image: public.ecr.aws/a4y4t9s0/metahub:latest
+    environment:
+      - PORT=8080
+      - PASSWORD_IGNORE=true
+      - STATIC_MACHINES=true
+
+configs:
+  caddyfile:
+    file: ./caddy/Caddyfile
