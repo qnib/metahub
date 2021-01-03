@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"metahub/pkg/daemon"
@@ -12,6 +13,10 @@ import (
 	"metahub/cmd"
 )
 
+var (
+	version = flag.Bool("version", false, "print version")
+)
+
 func Log(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
@@ -20,6 +25,11 @@ func Log(handler http.Handler) http.Handler {
 }
 
 func main() {
+	flag.Parse()
+	if *version {
+		fmt.Println(`v0.0.0`)
+		os.Exit(0)
+	}
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
