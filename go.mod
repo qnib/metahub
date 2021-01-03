@@ -1,4 +1,4 @@
-module metahub
+module github.com/qnib/metahub
 
 go 1.12
 

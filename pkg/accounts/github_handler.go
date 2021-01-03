@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"metahub/pkg/daemon"
 	"net/http"
+
+	"github.com/qnib/metahub/pkg/daemon"
 
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"

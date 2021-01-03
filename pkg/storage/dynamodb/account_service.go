@@ -2,7 +2,8 @@ package dynamodb
 
 import (
 	"context"
-	"metahub/pkg/storage"
+
+	"github.com/qnib/metahub/pkg/storage"
 )
 
 type accountService struct {

@@ -1,8 +1,8 @@
 package daemon
 
 import (
-	"metahub/pkg/registry"
-	"metahub/pkg/storage"
+	"github.com/qnib/metahub/pkg/registry"
+	"github.com/qnib/metahub/pkg/storage"
 )
 
 // Service is the main interface to other execution services

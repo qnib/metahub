@@ -3,10 +3,11 @@ package machinetypes
 import (
 	"encoding/json"
 	"log"
-	"metahub/pkg/daemon"
 	"net/http"
 
-	"metahub/pkg/storage"
+	"github.com/qnib/metahub/pkg/daemon"
+
+	"github.com/qnib/metahub/pkg/storage"
 
 	"github.com/gorilla/context"
 )
@@ -39,7 +40,7 @@ func getAddHandler(service daemon.Service) http.Handler {
 			log.Printf("failed adding machine type: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
-		} 
+		}
 
 		d, err := json.Marshal(mt)
 		if err != nil {

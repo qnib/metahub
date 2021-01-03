@@ -1,8 +1,9 @@
 package server
 
 import (
-	"metahub/pkg/daemon"
 	"net/http"
+
+	"github.com/qnib/metahub/pkg/daemon"
 )
 
 func getBaseHandler(service daemon.Service) http.Handler {

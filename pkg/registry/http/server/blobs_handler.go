@@ -3,10 +3,11 @@ package server
 import (
 	"io"
 	"log"
-	"metahub/pkg/daemon"
-	"metahub/pkg/registry"
 	"net/http"
 	"strconv"
+
+	"github.com/qnib/metahub/pkg/daemon"
+	"github.com/qnib/metahub/pkg/registry"
 
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"

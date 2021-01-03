@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"metahub/pkg/storage"
 	"strings"
+
+	"github.com/qnib/metahub/pkg/storage"
 )
 
 type machineTypeService struct {

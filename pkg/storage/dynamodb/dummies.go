@@ -1,6 +1,6 @@
 package dynamodb
 
-import "metahub/pkg/storage"
+import "github.com/qnib/metahub/pkg/storage"
 
 // Consts for protoype
 const (

@@ -2,13 +2,13 @@ package boltdb
 
 import (
 	"context"
-	"metahub/pkg/storage"
 	"time"
+
+	"github.com/qnib/metahub/pkg/storage"
 )
 
-
 type accessTokenService struct {
-	ctx    context.Context
+	ctx context.Context
 }
 
 func (s *accessTokenService) Get(token string) (*storage.AccessToken, error) {

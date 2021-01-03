@@ -3,9 +3,10 @@ package server
 import (
 	"fmt"
 	"log"
-	"metahub/pkg/daemon"
-	"metahub/pkg/registry"
 	"net/http"
+
+	"github.com/qnib/metahub/pkg/daemon"
+	"github.com/qnib/metahub/pkg/registry"
 
 	"github.com/gorilla/context"
 

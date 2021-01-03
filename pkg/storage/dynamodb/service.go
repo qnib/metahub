@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"metahub/pkg/storage"
 	"sync"
+
+	"github.com/qnib/metahub/pkg/storage"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"

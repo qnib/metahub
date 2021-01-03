@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"metahub/pkg/daemon"
 	"net/http"
 	"strings"
+
+	"github.com/qnib/metahub/pkg/daemon"
 
 	"golang.org/x/oauth2"
 	googleAuth "golang.org/x/oauth2/google"

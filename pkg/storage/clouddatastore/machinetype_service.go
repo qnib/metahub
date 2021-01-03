@@ -3,9 +3,10 @@ package clouddatastore
 import (
 	"context"
 	"fmt"
-	"metahub/pkg/storage"
 	"sort"
+
 	"cloud.google.com/go/datastore"
+	"github.com/qnib/metahub/pkg/storage"
 )
 
 type machineTypeService struct {
@@ -44,7 +45,7 @@ func (s *machineTypeService) GetByUsername(username string) (*storage.MachineTyp
 
 	var machineTypes []machineTypeModel
 	q := datastore.NewQuery(machineTypeEntityKind)
-	q=q.Filter("login =",username)
+	q = q.Filter("login =", username)
 	machineTypeKeys, err := s.client.GetAll(s.ctx, q, &machineTypes)
 	if _, ok := err.(*datastore.ErrFieldMismatch); ok {
 		err = nil
@@ -53,28 +54,28 @@ func (s *machineTypeService) GetByUsername(username string) (*storage.MachineTyp
 		return nil, fmt.Errorf("error querying feature sets: %v", err)
 	}
 
-	if len(machineTypeKeys)==0{
+	if len(machineTypeKeys) == 0 {
 		return nil, nil
 	}
-	if len(machineTypeKeys)>1{
-		return nil, fmt.Errorf("found %d entities",len(machineTypeKeys))
+	if len(machineTypeKeys) > 1 {
+		return nil, fmt.Errorf("found %d entities", len(machineTypeKeys))
 	}
 
-	mt:=machineTypes[0]
-	machineTypeKey:=machineTypeKeys[0]
+	mt := machineTypes[0]
+	machineTypeKey := machineTypeKeys[0]
 
-/*	machineTypeKey, err := datastore.DecodeKey(username)
-	var mt machineTypeModel
-	err = s.client.Get(s.ctx, machineTypeKey, &mt)
-	if _, ok := err.(*datastore.ErrFieldMismatch); ok {
-		err = nil
-	}
-	if err == datastore.ErrNoSuchEntity {
-		return nil, nil
-	}
-	if err != nil {
-		return nil, fmt.Errorf("error getting machine type: %v", err)
-	}*/
+	/*	machineTypeKey, err := datastore.DecodeKey(username)
+		var mt machineTypeModel
+		err = s.client.Get(s.ctx, machineTypeKey, &mt)
+		if _, ok := err.(*datastore.ErrFieldMismatch); ok {
+			err = nil
+		}
+		if err == datastore.ErrNoSuchEntity {
+			return nil, nil
+		}
+		if err != nil {
+			return nil, fmt.Errorf("error getting machine type: %v", err)
+		}*/
 	return &storage.MachineType{
 		ID:          machineTypeKey.ID,
 		DisplayName: mt.DisplayName,
@@ -86,9 +87,9 @@ func (s *machineTypeService) GetByUsername(username string) (*storage.MachineTyp
 
 func (s *machineTypeService) Add(accountName string, mt *storage.MachineType) error {
 
-	if existingMt,err:=s.GetByUsername(mt.Login);err != nil {
+	if existingMt, err := s.GetByUsername(mt.Login); err != nil {
 		return fmt.Errorf("failed to check for existing login: %v", err)
-	}else if existingMt!=nil{
+	} else if existingMt != nil {
 		return fmt.Errorf("login already exist: %v", err)
 	}
 
@@ -138,12 +139,12 @@ func (s *machineTypeService) List(accountName string) ([]storage.MachineType, er
 
 	result := make([]storage.MachineType, len(machineTypes))
 
-	sort.Slice(machineTypes, func(i, j int) bool { 
+	sort.Slice(machineTypes, func(i, j int) bool {
 		return machineTypes[i].DisplayName < machineTypes[j].DisplayName
-	 })
-	 sort.Slice(machineTypeKeys, func(i, j int) bool { 
+	})
+	sort.Slice(machineTypeKeys, func(i, j int) bool {
 		return machineTypes[i].DisplayName < machineTypes[j].DisplayName
-	 })
+	})
 
 	for i, mt := range machineTypes {
 		k := machineTypeKeys[i]
@@ -171,10 +172,10 @@ func (s *machineTypeService) Update(accountName string, mt storage.MachineType) 
 		return fmt.Errorf("error getting entity: %v", err)
 	}
 
-	if tmp.Login != mt.Login{
-		if existingMt,err:=s.GetByUsername(mt.Login);err != nil {
+	if tmp.Login != mt.Login {
+		if existingMt, err := s.GetByUsername(mt.Login); err != nil {
 			return fmt.Errorf("failed to check for existing login: %v", err)
-		}else if existingMt!=nil{
+		} else if existingMt != nil {
 			return fmt.Errorf("login already exist: %v", err)
 		}
 	}

@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"log"
-	"metahub/pkg/daemon"
-	"metahub/pkg/storage"
 	"net/http"
+
+	"github.com/qnib/metahub/pkg/daemon"
+	"github.com/qnib/metahub/pkg/storage"
 
 	"golang.org/x/oauth2"
 )

@@ -2,8 +2,9 @@ package dynamodb
 
 import (
 	"context"
-	"metahub/pkg/storage"
 	"time"
+
+	"github.com/qnib/metahub/pkg/storage"
 )
 
 type accessTokenService struct {
