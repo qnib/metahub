@@ -1,4 +1,6 @@
-# MetaHub - Dynamic OCI Registry Proxy
+# Branch `master` is archived, please use `main`
+
+## MetaHub - Dynamic OCI Registry Proxy
 
 Announcement: [qnib.org](http://www.qnib.org/2019/06/12/metahub/)
 
