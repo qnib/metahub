@@ -1,7 +1,10 @@
-FROM node AS ui
+FROM node:11.4.0 AS ui
 WORKDIR /go/metahub
+RUN npm install -g npm-check-updates
 COPY ./ui/package* ./ui/
-RUN cd ui && npm install
+RUN cd ui \
+ && ncu \
+ && npm install
 COPY ./ui ./ui
 COPY ./static ./static
 COPY ./templates ./templates
