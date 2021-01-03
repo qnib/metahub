@@ -1,4 +1,5 @@
 FROM node:11.4.0 AS ui
+RUN npm install -g npm@7.3.0
 WORKDIR /go/metahub
 COPY ./ui/package* ./ui/
 RUN cd ui && npm install
@@ -23,8 +24,6 @@ EXPOSE 8080
 
 # Go binary serves the ui web content
 FROM ubuntu:18.04
-RUN apt update \
- && apt install -y docker.io vim net-tools
 ENV PORT=80
 COPY --from=go /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=ui /go/metahub/static /srv/html/static
