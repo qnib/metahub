@@ -89,7 +89,6 @@ func AuthMiddleware(service daemon.Service) func(http.Handler) http.Handler {
 
 func unauthorized(w http.ResponseWriter, realm string, err oauthError, format string, v ...interface{}) {
 	description := fmt.Sprintf(format, v...)
-	log.Printf("%s: %s", err, description)
 	w.Header().Add("WWW-Authenticate", fmt.Sprintf("Bearer realm=%q,error=%q,error_description=%q", realm, err, description))
 	w.WriteHeader(http.StatusUnauthorized)
 }
