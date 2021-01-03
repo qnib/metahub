@@ -39,7 +39,7 @@ func AuthMiddleware(service daemon.Service) func(http.Handler) http.Handler {
 				return
 			}
 			if mt == nil {
-				log.Printf("unknown login (machine type)")
+				log.Printf("unknown login (machine type is empty)")
 				unauthorized(w)
 				return
 			}

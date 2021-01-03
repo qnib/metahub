@@ -1,0 +1,7 @@
+metahub.qnib.org {
+    reverse_proxy metahub:8080
+}
+
+metahub-static.qnib.org {
+    reverse_proxy metahub-static:8080
+}
