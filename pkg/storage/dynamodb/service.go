@@ -202,6 +202,20 @@ func mhTableUserScan(db *dynamodb.DynamoDB, tableName, usern string) (user Users
 	return
 }
 
+func mhTableTypeList(db *dynamodb.DynamoDB, tableName string) (typeItems []TypeItem, err error) {
+	log.Printf("List machine types in '%s'", tableName)
+	params := &dynamodb.ScanInput{
+		TableName: aws.String(tableName),
+	}
+	result, err := svc.Scan(params)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &typeItems)
+	return
+}
+
 func mhTableTypeScan(db *dynamodb.DynamoDB, tableName, typen string) (typeItem TypeItem, err error) {
 	log.Printf("Search for type '%s' in '%s'", typen, tableName)
 	var queryInput = &dynamodb.QueryInput{
