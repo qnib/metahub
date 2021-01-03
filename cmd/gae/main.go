@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 	"log"
-	"metahub/pkg/daemon"
-	registry "metahub/pkg/registry/http/client"
-	"metahub/pkg/storage/clouddatastore"
 	"net/http"
 	"os"
 
-	"metahub/cmd"
+	"github.com/qnib/metahub/cmd"
+	"github.com/qnib/metahub/pkg/daemon"
+	registry "github.com/qnib/metahub/pkg/registry/http/client"
+	"github.com/qnib/metahub/pkg/storage/clouddatastore"
 )
 
 func main() {
