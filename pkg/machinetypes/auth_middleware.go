@@ -6,6 +6,7 @@ import (
 	"metahub/pkg/daemon"
 	"metahub/pkg/registry/filter"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/context"
 )
