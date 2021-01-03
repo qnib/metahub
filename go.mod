@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	cloud.google.com/go v0.37.4
+	github.com/aws/aws-sdk-go v1.36.19
 	github.com/boltdb/bolt v1.3.1
 	github.com/docker/distribution v2.7.0+incompatible
 	github.com/docker/go-metrics v0.0.0-20181218153428-b84716841b82 // indirect
