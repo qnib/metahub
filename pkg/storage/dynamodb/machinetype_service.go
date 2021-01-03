@@ -38,9 +38,6 @@ func (s *machineTypeService) GetByUsername(username string) (mt *storage.Machine
 	if err != nil {
 		return
 	}
-	log.Println("Found item:")
-	log.Println("Login:  ", user.Login)
-	log.Println("Password: ", user.Password)
 	mt = &storage.MachineType{
 		Login:    user.Login,
 		Password: user.Password,
@@ -50,9 +47,6 @@ func (s *machineTypeService) GetByUsername(username string) (mt *storage.Machine
 	if err != nil {
 		return
 	}
-	log.Println("Found item:")
-	log.Println("Type:  ", typ.Type)
-	log.Println("Featuresd: ", typ.Features)
 	mt.Features = strings.Split(typ.Features, ",")
 	mt.DisplayName = typ.Type
 	log.Printf("Return MT: %v", mt)
@@ -67,8 +61,19 @@ func (s *machineTypeService) Delete(accountName string, id int64) error {
 	return nil
 }
 
-func (s *machineTypeService) List(accountName string) (mt []storage.MachineType, err error) {
+func (s *machineTypeService) List(accountName string) (mts []storage.MachineType, err error) {
 	log.Printf("mt.List(accountName=%s)", accountName)
+	typeItems, err := mhTableTypeList(svc, fmt.Sprintf("%s_types", mhDbTablePrefix))
+	if err != nil {
+		return
+	}
+	for _, tItem := range typeItems {
+		mt := storage.MachineType{
+			DisplayName: tItem.Type,
+			Features:    strings.Split(tItem.Features, ","),
+		}
+		mts = append(mts, mt)
+	}
 	return
 }
 
