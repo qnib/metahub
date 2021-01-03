@@ -1,4 +1,5 @@
 FROM node:11.4.0 AS ui
+RUN npm install -g npm@7.3.0
 WORKDIR /go/metahub
 COPY ./ui/package* ./ui/
 RUN cd ui && npm install
