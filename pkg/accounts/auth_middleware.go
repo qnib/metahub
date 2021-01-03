@@ -3,9 +3,10 @@ package accounts
 import (
 	"fmt"
 	"log"
-	"metahub/pkg/daemon"
 	"net/http"
 	"strings"
+
+	"github.com/qnib/metahub/pkg/daemon"
 
 	"github.com/gorilla/context"
 )

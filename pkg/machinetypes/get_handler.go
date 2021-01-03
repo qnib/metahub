@@ -3,9 +3,10 @@ package machinetypes
 import (
 	"encoding/json"
 	"log"
-	"metahub/pkg/daemon"
 	"net/http"
 	"strconv"
+
+	"github.com/qnib/metahub/pkg/daemon"
 
 	"github.com/gorilla/context"
 )

@@ -1,9 +1,10 @@
 package server
 
 import (
-	"metahub/pkg/daemon"
-	"metahub/pkg/machinetypes"
 	"net/http"
+
+	"github.com/qnib/metahub/pkg/daemon"
+	"github.com/qnib/metahub/pkg/machinetypes"
 
 	"github.com/gorilla/mux"
 )

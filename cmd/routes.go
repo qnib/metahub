@@ -1,15 +1,16 @@
 package cmd
 
 import (
-	"metahub/pkg/daemon"
 	"net/http"
 
-	"metahub/pkg/accounts"
-	"metahub/pkg/machinetypes"
-	"metahub/pkg/registry/http/server"
+	"github.com/qnib/metahub/pkg/daemon"
+
+	"github.com/qnib/metahub/pkg/accounts"
+	"github.com/qnib/metahub/pkg/machinetypes"
+	"github.com/qnib/metahub/pkg/registry/http/server"
 )
 
-func RegisterRoutes(service daemon.Service) *http.ServeMux{
+func RegisterRoutes(service daemon.Service) *http.ServeMux {
 	router := http.NewServeMux()
 	RegisterStaticRoutes(service, router)
 	RegisterAPIRoutes(service, router)

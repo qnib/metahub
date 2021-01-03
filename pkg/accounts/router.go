@@ -3,7 +3,7 @@ package accounts
 import (
 	"net/http"
 
-	"metahub/pkg/daemon"
+	"github.com/qnib/metahub/pkg/daemon"
 
 	"github.com/gorilla/mux"
 )

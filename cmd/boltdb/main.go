@@ -4,19 +4,21 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"metahub/pkg/daemon"
-	registry "metahub/pkg/registry/http/client"
-	"metahub/pkg/storage/boltdb"
 	"net/http"
 	"os"
 
-	"metahub/cmd"
+	"github.com/qnib/metahub/pkg/daemon"
+	registry "github.com/qnib/metahub/pkg/registry/http/client"
+	"github.com/qnib/metahub/pkg/storage/boltdb"
+
+	"github.com/qnib/metahub/cmd"
 )
 
 var (
 	version = flag.Bool("version", false, "print version")
 )
 
+// Log intercepts each requests and writes it out
 func Log(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("%s %s %s", r.RemoteAddr, r.Method, r.URL)

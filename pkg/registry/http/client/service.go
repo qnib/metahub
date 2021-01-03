@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"metahub/pkg/registry"
+
+	"github.com/qnib/metahub/pkg/registry"
 
 	"github.com/docker/distribution"
 	"github.com/docker/distribution/reference"

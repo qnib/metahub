@@ -5,8 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"metahub/pkg/storage"
 	"os"
+
+	"github.com/qnib/metahub/pkg/storage"
 
 	"github.com/boltdb/bolt"
 )

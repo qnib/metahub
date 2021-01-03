@@ -3,10 +3,11 @@ package machinetypes
 import (
 	"fmt"
 	"log"
-	"metahub/pkg/daemon"
-	"metahub/pkg/registry/filter"
 	"net/http"
 	"os"
+
+	"github.com/qnib/metahub/pkg/daemon"
+	"github.com/qnib/metahub/pkg/registry/filter"
 
 	"github.com/gorilla/context"
 )

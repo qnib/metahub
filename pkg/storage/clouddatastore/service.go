@@ -3,7 +3,8 @@ package clouddatastore
 import (
 	"context"
 	"fmt"
-	"metahub/pkg/storage"
+
+	"github.com/qnib/metahub/pkg/storage"
 
 	"cloud.google.com/go/datastore"
 )

@@ -2,11 +2,12 @@ package boltdb
 
 import (
 	"context"
-	"metahub/pkg/storage"
+
+	"github.com/qnib/metahub/pkg/storage"
 )
 
 type accountService struct {
-	ctx    context.Context
+	ctx context.Context
 }
 
 func (s *accountService) Upsert(name string, a storage.Account) error {

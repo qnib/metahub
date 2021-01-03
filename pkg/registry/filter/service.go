@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"metahub/pkg/registry"
-	"metahub/pkg/storage"
+
+	"github.com/qnib/metahub/pkg/registry"
+	"github.com/qnib/metahub/pkg/storage"
 
 	"github.com/docker/distribution"
 	"github.com/opencontainers/go-digest"

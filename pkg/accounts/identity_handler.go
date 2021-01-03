@@ -3,9 +3,10 @@ package accounts
 import (
 	"encoding/json"
 	"log"
-	"metahub/pkg/daemon"
-	"metahub/pkg/storage"
 	"net/http"
+
+	"github.com/qnib/metahub/pkg/daemon"
+	"github.com/qnib/metahub/pkg/storage"
 
 	"github.com/gorilla/context"
 )
