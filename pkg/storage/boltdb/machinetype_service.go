@@ -126,15 +126,10 @@ func (s *machineTypeService) GetByUsername(username string) (mt *storage.Machine
 		}
 		return nil
 	})
-	log.Printf("Return mt: %v\n", mt)
 	return mt, nil
 }
 
 func (s *machineTypeService) Add(accountName string, mt *storage.MachineType) (err error) {
-	if _, b := os.LookupEnv("STATIC_MACHINES"); b {
-		log.Println("Environment STATIC_MACHINES is set: Skip Add()")
-		return err
-	}
 	dbSync.Lock()
 	defer dbSync.Unlock()
 	err = db.Update(func(tx *bolt.Tx) error {
