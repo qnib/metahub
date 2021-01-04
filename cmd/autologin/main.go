@@ -19,7 +19,7 @@ var (
 func main() {
 	flag.Parse()
 	if *version {
-		fmt.Println(`v0.2.6`)
+		fmt.Println(`v0.2.7`)
 		os.Exit(0)
 	}
 	if !*getPw && !*getUser {
