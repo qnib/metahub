@@ -8,7 +8,7 @@ import Account from "./Account";
 Vue.use({
     install(vue) {
         axios.interceptors.request.use(function (config) {
-            config.headers.Authorization = 'Bearer qnib';
+            config.headers.Authorization = 'Bearer metahub';
             return config;
         }, function (error) {
             return Promise.reject(error);

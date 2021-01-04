@@ -6,23 +6,29 @@ import (
 )
 
 var testConfig1 = `
-- name: broadwell
-  features:
-  - cpu:broadwell
-- name: skylake
-  features:
-  - cpu:skylake
+user: user
+password: hash
+types:
+  - name: broadwell
+    features:
+    - cpu:broadwell
+  - name: skylake
+    features:
+    - cpu:skylake
 `
 
-func Test_ParseMAchineTypes_testConfig1(t *testing.T) {
-	mts, err := ParseMAchineTypes([]byte(testConfig1))
+func Test_ParseConfig_testConfig1(t *testing.T) {
+	cfg, err := ParseConfig([]byte(testConfig1))
 	if err != nil {
 		t.Error(err.Error())
 	}
-	if len(mts) != 2 {
+	if cfg.User != "user" {
+		t.Errorf("User should be 'user'; got '%s'", cfg.User)
+	}
+	if len(cfg.Types) != 2 {
 		t.Error("Length of testConfig1 should be 2")
 	}
-	for _, mt := range mts {
+	for _, mt := range cfg.Types {
 		fmt.Println(mt)
 	}
 }

@@ -1,0 +1,14 @@
+# Meant to be used with qnib/bench
+user: user
+password: hash
+types:
+  - name: skylake
+    features:
+    - cpu:skylake
+  - name: broadwell
+    features:
+    - cpu:broadwell
+  - name: nv_broadwell
+    features:
+    - cpu:broadwell
+    - nvcap:5.2

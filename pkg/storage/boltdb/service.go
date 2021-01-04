@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 	"sync"
 
 	"github.com/boltdb/bolt"
@@ -15,28 +14,30 @@ var db *bolt.DB
 var dbSync sync.Mutex
 
 func init() {
-	if _, b := os.LookupEnv("STATIC_MACHINES"); b {
-		log.Println("Environment STATIC_MACHINES is set: Serve static machine type")
-	} else {
-		err := setupDB()
-		if err != nil {
-			log.Fatal(err.Error())
-		}
+	err := setupDB()
+	if err != nil {
+		log.Fatal(err.Error())
 	}
 }
 
 // NewService returns a new storage.Service for boltdb
-func NewService() storage.Service {
-	return &service{}
+func NewService(cpath string) storage.Service {
+	return &service{
+		ConfigPath: cpath,
+	}
 }
 
 type service struct {
+	ConfigPath string
 }
 
-func (s *service) MachineTypeService(ctx context.Context) (storage.MachineTypeService, error) {
-	return &machineTypeService{
-		ctx: ctx,
-	}, nil
+func (s *service) MachineTypeService(ctx context.Context) (mt storage.MachineTypeService, err error) {
+	mt = &machineTypeService{
+		ctx:        ctx,
+		ConfigPath: s.ConfigPath,
+	}
+	err = mt.Init()
+	return
 }
 
 func (s *service) AccessTokenService(ctx context.Context) (storage.AccessTokenService, error) {
@@ -68,12 +69,9 @@ func setupDB() error {
 		if err != nil {
 			return fmt.Errorf("could not create USERS bucket: %v", err)
 		}
-		tb, err := tx.CreateBucketIfNotExists([]byte("TYPES"))
+		_, err = tx.CreateBucketIfNotExists([]byte("TYPES"))
 		if err != nil {
 			return fmt.Errorf("could not create TYPES bucket: %v", err)
-		}
-		if tb != nil {
-			log.Printf("We'll fill the bucket if it is empty using a config file")
 		}
 		return nil
 	})

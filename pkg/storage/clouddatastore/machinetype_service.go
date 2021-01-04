@@ -18,6 +18,10 @@ func formatLogin(accountName string, login string) {
 
 }
 
+func (s *machineTypeService) Init() (err error) {
+	return
+}
+
 func (s *machineTypeService) GetByID(accountName string, id int64) (*storage.MachineType, error) {
 	accountKey := datastore.NameKey(accountEntityKind, accountName, nil)
 	machineTypeKey := datastore.IDKey(machineTypeEntityKind, id, accountKey)

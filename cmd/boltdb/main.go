@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -16,6 +17,8 @@ import (
 
 var (
 	version = flag.Bool("version", false, "print version")
+	config  = flag.String("config", "", "Config holding the initial machine types and users")
+	genHash = flag.String("genhash", "", "Create password hash and exit")
 )
 
 // Log intercepts each requests and writes it out
@@ -37,7 +40,13 @@ func main() {
 		port = "8080"
 	}
 
-	storageService := boltdb.NewService()
+	storageService := boltdb.NewService(*config)
+	if *genHash != "" {
+		mtScv, _ := storageService.MachineTypeService(context.Background())
+		fmt.Println(mtScv.GenPasswordHash(*genHash))
+		os.Exit(0)
+	}
+
 	registryService := registry.NewService()
 	daemonService := daemon.NewService(storageService, registryService)
 

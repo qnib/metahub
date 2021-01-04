@@ -13,22 +13,27 @@ type MachineType struct {
 	Features    []string `yaml:"features"`
 }
 
-// MachineTypes holds a list of MachineTypes
-type MachineTypes []MachineType
+// Config holds a list of MachineTypes
+type Config struct {
+	//TODO:  Password should be a hash
+	User     string        `yaml:"user"`
+	Password string        `yaml:"password"`
+	Types    []MachineType `yaml:"types"`
+}
 
-// ParseMAchineTypes takes a bytearray and unmarshals it
-func ParseMAchineTypes(data []byte) (mts MachineTypes, err error) {
-	err = yaml.Unmarshal(data, &mts)
+// ParseConfig takes a bytearray and unmarshals it
+func ParseConfig(data []byte) (cfg Config, err error) {
+	err = yaml.Unmarshal(data, &cfg)
 	return
 }
 
-// CreateMachineTypesFromFile parses a file and returns a workshop
-func CreateMachineTypesFromFile(fpath string) (mts MachineTypes, err error) {
+// CreateConfigFromFile parses a file and returns a workshop
+func CreateConfigFromFile(fpath string) (cfg Config, err error) {
 	log.Printf("Reading file: %s", fpath)
 	yData, err := ioutil.ReadFile(fpath)
 	if err != nil {
 		log.Printf("yamlFile.Get err   #%v ", err)
 	}
-	mts, err = ParseMAchineTypes(yData)
+	cfg, err = ParseConfig(yData)
 	return
 }

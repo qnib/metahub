@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/qnib/metahub/pkg/daemon"
 	"github.com/qnib/metahub/pkg/registry/filter"
@@ -44,12 +43,10 @@ func AuthMiddleware(service daemon.Service) func(http.Handler) http.Handler {
 				unauthorized(w)
 				return
 			}
-			if _, b := os.LookupEnv("PASSWORD_IGNORE"); b {
-				if mt.Password != password {
-					log.Printf("invalid password")
-					unauthorized(w)
-					return
-				}
+			if !mediaTypeService.CheckPassword(password, mt.Password) {
+				log.Printf("invalid password")
+				unauthorized(w)
+				return
 			}
 
 			backendRegistryService := service.Registry()

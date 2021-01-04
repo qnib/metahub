@@ -16,6 +16,9 @@ type machineTypeService struct {
 func formatLogin(accountName string, login string) {
 
 }
+func (s *machineTypeService) Init() (err error) {
+	return
+}
 
 func (s *machineTypeService) GetByID(accountName string, id int64) (mt *storage.MachineType, err error) {
 	log.Printf("GetByID(%s, %d)\n", accountName, id)

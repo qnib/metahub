@@ -1,3 +1,4 @@
+ARG MH_CONFIG=bench.yaml
 FROM node:11.4.0 AS ui
 RUN npm install -g npm@7.3.0
 WORKDIR /go/metahub
@@ -32,11 +33,16 @@ RUN git clone https://github.com/schmichael/boltq.git \
 # Go binary serves the ui web content
 FROM ubuntu:18.04
 ENV PORT=80
+RUN apt update \
+ && apt install -y vim
+ARG MH_CONFIG=${MH_CONFIG}
+RUN echo "metahub -config /data/metahub.yaml" > /root/.bash_history
 COPY --from=go /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=boltq /go/boltq/boltq /usr/bin/
 COPY --from=ui /go/metahub/static /srv/html/static
 COPY --from=ui /go/metahub/templates/gen/index.html /srv/html/
-COPY --from=go /go/metahub/cmd/boltdb/boltdb /usr/bin/
+COPY --from=go /go/metahub/cmd/boltdb/boltdb /usr/bin/metahub
+COPY ./misc/config/${MH_CONFIG} /data/metahub.yaml
 VOLUME /data/
 WORKDIR /data/
-ENTRYPOINT ["/usr/bin/boltdb"]
+CMD ["/usr/bin/metahub", "-config", "/data/metahub.yaml"]
