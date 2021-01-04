@@ -13,6 +13,7 @@ require (
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/gorilla/context v1.1.1
 	github.com/gorilla/mux v1.7.1
+	github.com/klauspost/cpuid v1.3.1
 	github.com/opencontainers/go-digest v1.0.0-rc1
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/sirupsen/logrus v1.4.1 // indirect
