@@ -3,7 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
+
+	"github.com/qnib/metahub/pkg/tooling"
 )
 
 var (
@@ -17,4 +20,10 @@ func main() {
 		fmt.Println(`v0.2.5`)
 		os.Exit(0)
 	}
+	md, err := tooling.GetMetaData()
+	if err != nil {
+		panic(err)
+	}
+	log.Println(md.GetMetahubFeatures())
+	log.Println(md.GetMetahubTypename())
 }
