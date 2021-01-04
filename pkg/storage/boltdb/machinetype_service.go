@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/qnib/metahub/pkg/storage"
 
@@ -56,7 +57,7 @@ func (s *machineTypeService) GetByID(accountName string, id int64) (mt *storage.
 		return err
 	})
 	if !foundID {
-		msg := fmt.Sprintf("Could not find MachineType with ID: %i", id)
+		msg := fmt.Sprintf("Could not find MachineType with ID: %d", id)
 		log.Printf(msg)
 		err = fmt.Errorf(msg)
 
@@ -81,19 +82,45 @@ func (s *machineTypeService) GetByUsername(username string) (mt *storage.Machine
 			panic(fmt.Errorf("Could not find username: %s", username))
 		}
 	}
-
+	userSplit := strings.Split(username, "-")
+	usern := userSplit[0]
+	var user UserItem
+	db.View(func(tx *bolt.Tx) error {
+		// Assume bucket exists and has keys
+		b := tx.Bucket([]byte("USERS"))
+		var tmpUsr UserItem
+		c := b.Cursor()
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+			if err := json.Unmarshal(v, &tmpUsr); err != nil {
+				panic(err)
+			}
+			if tmpUsr.Login == usern {
+				log.Printf("Found user '%s'", usern)
+				user = &tmpUsr
+				break
+			}
+		}
+		return nil
+	})
+	if user == nil {
+		return nil, fmt.Errorf("Could not find user '%s'", usern)
+	}
+	mt.Login = usern
+	mt.Password = user.Password
+	typen := strings.Join(userSplit[1:], "-")
 	db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
 		b := tx.Bucket([]byte("TYPES"))
-		var mType storage.MachineType
+		var tmpType TypeItem
 		c := b.Cursor()
 		for k, v := c.First(); k != nil; k, v = c.Next() {
-			if err := json.Unmarshal(v, &mType); err != nil {
+			if err := json.Unmarshal(v, &tmpType); err != nil {
 				panic(err)
 			}
-			if mType.Login == username {
-				log.Printf("Found mType by user: %v\n", mType)
-				mt = &mType
+			if tmpType.Type == typen {
+				log.Printf("Found mType: %s\n", typen)
+				mt.Features = tmpType.Features
+				mt.DisplayName = tmpType.Type
 				break
 			}
 		}
