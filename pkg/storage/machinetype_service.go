@@ -8,4 +8,7 @@ type MachineTypeService interface {
 	Delete(accountName string, id int64) error
 	List(accountName string) ([]MachineType, error)
 	Update(accountName string, machineType MachineType) error
+	Init() error
+	CheckPassword(plain, hash string) bool
+	GenPasswordHash(pwd string) string
 }

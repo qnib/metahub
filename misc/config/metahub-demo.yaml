@@ -1,0 +1,97 @@
+# Meant to be used with qnib/metahub-demo:2021-01-04.2
+user: metahub
+# passwd: gromacs-sarus123
+password: "$2a$14$gb2QajF6cioofNOFzEVjguCVbxVbn1Pez/nJ69IVd98iHi3s/3Mc."
+types:
+  - name: c59xl
+    features:
+    - instType:c5
+    - instSize:9xl
+    - instHT:off
+  - name: c59xl-ht
+    features:
+    - instType:c5
+    - instSize:9xl
+    - instHT:on
+  - name: c512xl
+    features:
+    - instType:c5
+    - instSize:12xl
+    - instHT:off
+  - name: c512xl-ht
+    features:
+    - instType:c5
+    - instSize:12xl
+    - instHT:on
+  - name: c516xl
+    features:
+    - instType:c5
+    - instSize:16xl
+    - instHT:off
+  - name: c516xl-ht
+    features:
+    - instType:c5
+    - instSize:16xl
+    - instHT:on
+  - name: c518xl
+    features:
+    - instType:c5
+    - instSize:18xl
+    - instHT:off
+  - name: c518xl-ht
+    features:
+    - instType:c5
+    - instSize:18xl
+    - instHT:on
+  - name: c524xl
+    features:
+    - instType:c5
+    - instSize:24xl
+    - instHT:off
+  - name: c524xl-ht
+    features:
+    - instType:c5
+    - instSize:24xl
+    - instHT:on
+  # c5n
+  - name: c5n9xl
+    features:
+    - instType:c5n
+    - instSize:9xl
+    - instHT:off
+  - name: c5n9xl-ht
+    features:
+    - instType:c5n
+    - instSize:9xl
+    - instHT:on
+  - name: c5n18xl
+    features:
+    - instType:c5n
+    - instSize:18xl
+    - instHT:off
+  - name: c5n18xl-ht
+    features:
+    - instType:c5n
+    - instSize:18xl
+    - instHT:on
+  # c5a
+  - name: c5a16xl
+    features:
+    - instType:c5a
+    - instSize:16xl
+    - instHT:off
+  - name: c5a16xl-ht
+    features:
+    - instType:c5a
+    - instSize:16xl
+    - instHT:on
+  - name: c5a24xl
+    features:
+    - instType:c5a
+    - instSize:24xl
+    - instHT:off
+  - name: c5a24xl-ht
+    features:
+    - instType:c5a
+    - instSize:24xl
+    - instHT:on
