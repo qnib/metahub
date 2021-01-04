@@ -29,7 +29,7 @@ func Log(handler http.Handler) http.Handler {
 func main() {
 	flag.Parse()
 	if *version {
-		fmt.Println(`v0.2.3`)
+		fmt.Println(`v0.2.4`)
 		os.Exit(0)
 	}
 	port := os.Getenv("PORT")

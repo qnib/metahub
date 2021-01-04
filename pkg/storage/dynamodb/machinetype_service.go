@@ -49,7 +49,6 @@ func (s *machineTypeService) GetByUsername(username string) (mt *storage.Machine
 	}
 	mt.Features = strings.Split(typ.Features, ",")
 	mt.DisplayName = typ.Type
-	log.Printf("Return MT: %v", mt)
 	return
 }
 
