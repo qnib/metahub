@@ -68,9 +68,12 @@ func setupDB() error {
 		if err != nil {
 			return fmt.Errorf("could not create USERS bucket: %v", err)
 		}
-		_, err = tx.CreateBucketIfNotExists([]byte("TYPES"))
+		tb, err := tx.CreateBucketIfNotExists([]byte("TYPES"))
 		if err != nil {
 			return fmt.Errorf("could not create TYPES bucket: %v", err)
+		}
+		if tb != nil {
+			log.Printf("We'll fill the bucket if it is empty using a config file")
 		}
 		return nil
 	})
