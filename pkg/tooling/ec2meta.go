@@ -10,6 +10,7 @@ import (
 	"github.com/klauspost/cpuid"
 )
 
+// EC2Meta holds the infos for the instance
 type EC2Meta struct {
 	InstanceType   string
 	InstanceSize   string
