@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/qnib/metahub/pkg/tooling"
@@ -24,6 +23,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	log.Println(md.GetMetahubFeatures())
-	log.Println(md.GetMetahubTypename())
+	fmt.Printf("%s-%s", *username, md.GetMetahubTypename())
 }
