@@ -16,6 +16,7 @@ require (
 	github.com/klauspost/cpuid v1.3.1
 	github.com/opencontainers/go-digest v1.0.0-rc1
 	github.com/opencontainers/image-spec v1.0.1 // indirect
+	github.com/prometheus/common v0.2.0
 	github.com/sirupsen/logrus v1.4.1 // indirect
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421

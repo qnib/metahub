@@ -1,4 +1,5 @@
-FROM golang:1.12 AS go
+FROM golang:1.12-alpine AS go
+RUN apk add git
 WORKDIR /go/metahub
 COPY ./go.mod .
 COPY ./go.sum .
@@ -11,7 +12,9 @@ RUN go build -a -ldflags '-extldflags "-static"' .
 
 
 # Go binary serves the ui web content
-FROM scratch
+FROM alpine:3.12.3
+RUN apk add --no-cache --update docker
 COPY --from=go /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=go /go/metahub/cmd/autologin/autologin /usr/bin/autologin
 ENTRYPOINT ["/usr/bin/autologin"]
+CMD ["-docker-login"]
