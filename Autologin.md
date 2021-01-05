@@ -20,7 +20,7 @@ $ docker pull -q public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.9
 As we are running on an `c5.9xlarge` instance with hyperthreading enabled, the username generated is `metahub--c59xl-ht`.
 
 ```bash
-$ docker run -ti --rm --network=host public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.7_dirty -get-user
+$ docker run -ti --rm --network=host public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.9 -get-user
 metahub-c59xl-ht
 ```
 
@@ -28,7 +28,8 @@ To login to metahub, we need to present the docker socket. As the login informat
 The `AWS_REGION` defines the parameter store to fetch the password from `/metahub/password`.
 
 ```bash
-$ docker run -e AWS_REGION=eu-west-1 -ti --rm --network=host -v ${HOME}/.docker:/root/.docker -v /var/run/docker.sock:/var/run/docker.sock public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.7_dirty
+$ docker run -e AWS_REGION=eu-west-1 -ti --rm --network=host -v ${HOME}/.docker:/root/.docker \
+             -v /var/run/docker.sock:/var/run/docker.sock public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.9
 2021/01/05 16:30:06 Use docker login via client
 2021/01/05 16:30:08 Login Succeeded
 ```
