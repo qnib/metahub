@@ -24,7 +24,7 @@ var (
 func main() {
 	flag.Parse()
 	if *version {
-		fmt.Println(`v0.2.8`)
+		fmt.Println(`v0.2.9`)
 		os.Exit(0)
 	}
 	awsRegion := ""
