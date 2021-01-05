@@ -13,6 +13,7 @@ import (
 var (
 	version     = flag.Bool("version", false, "print version")
 	username    = flag.String("user", "metahub", "The username to login (default: metahub)")
+	typename    = flag.String("type", "", "Define the machine type, will be generated based on instance info otherwise")
 	region      = flag.String("aws-region", "", "AWS REGION")
 	regname     = flag.String("registry", "mh.qnib.org", "Metahub registry name")
 	getPw       = flag.Bool("get-pass", false, "fetch password from SSM")
@@ -33,7 +34,7 @@ func main() {
 	case *region != "" && os.Getenv("AWS_REGION") != "":
 		log.Printf("--aws-region is set while AWS_REGION is also present; we'll go with the CLI argument")
 		awsRegion = *region
-	case *region == "" && os.Getenv("AWS_REGION") == "":
+	case *region == "" && os.Getenv("AWS_REGION") == "" && !*dockerLogin:
 		log.Printf("--aws-region and $AWS_REGION are both empty")
 	default:
 		awsRegion = *region
@@ -47,7 +48,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		uname := fmt.Sprintf("%s-%s", *username, md.GetMetahubTypename())
+		uname := fmt.Sprintf("%s-%s", *username, md.GetMetahubTypename(*typename))
 		passwd, err := tooling.GetSSMPassword(awsRegion, "/metahub/password")
 		if err != nil {
 			panic(err)
@@ -64,7 +65,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Printf("%s-%s\n", *username, md.GetMetahubTypename())
+		fmt.Printf("%s-%s\n", *username, md.GetMetahubTypename(*typename))
 		os.Exit(0)
 	}
 	if *getPw {

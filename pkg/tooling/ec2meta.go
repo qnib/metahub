@@ -47,7 +47,10 @@ func (md *EC2Meta) GetMetahubFeatures() []string {
 }
 
 // GetMetahubTypename returns the typename to login to metahub
-func (md *EC2Meta) GetMetahubTypename() string {
+func (md *EC2Meta) GetMetahubTypename(tname string) string {
+	if tname != "" {
+		return tname
+	}
 	res := []string{fmt.Sprintf("%s%s", md.InstanceType, md.InstanceSize)}
 	if md.HyperThreading == "on" {
 		res = append(res, "ht")
