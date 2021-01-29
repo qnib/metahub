@@ -1,10 +1,10 @@
 ## Autologin
 
 ```bash
-docker pull -q public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.9
-export MH_USER=$(docker run --rm --network=host public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.9 -get-user)
+docker pull -q public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.10
+export MH_USER=$(docker run --rm --network=host public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.10 -get-user)
 echo "> MH_USER: ${MH_USER}"
-export MH_PASS=$(docker run --rm --network=host public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.9 -get-pass -aws-region=eu-west-1)
+export MH_PASS=$(docker run --rm --network=host public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.10 -get-pass -aws-region=eu-west-1)
 echo "> MH_PASS: ${MH_PASS}"
 echo ${MH_PASS} |docker login --username ${MH_USER} --password-stdin mh.qnib.org
 ```
@@ -14,13 +14,13 @@ echo ${MH_PASS} |docker login --username ${MH_USER} --password-stdin mh.qnib.org
 First we pull the latest image.
 
 ```bash
-$ docker pull -q public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.9
+$ docker pull -q public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.10
 ```
 
 As we are running on an `c5.9xlarge` instance with hyperthreading enabled, the username generated is `metahub--c59xl-ht`.
 
 ```bash
-$ docker run -ti --rm --network=host public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.9 -get-user
+$ docker run -ti --rm --network=host public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.10 -get-user
 metahub-c59xl-ht
 ```
 
@@ -29,7 +29,7 @@ The `AWS_REGION` defines the parameter store to fetch the password from `/metahu
 
 ```bash
 $ docker run -e AWS_REGION=eu-west-1 -ti --rm --network=host -v ${HOME}/.docker:/root/.docker \
-             -v /var/run/docker.sock:/var/run/docker.sock public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.9
+             -v /var/run/docker.sock:/var/run/docker.sock public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.10
 2021/01/05 16:30:06 Use docker login via client
 2021/01/05 16:30:08 Login Succeeded
 ```
@@ -58,10 +58,10 @@ $
 Instead of autogenerate the login, the type can also be enforced.
 
 ```bash
-$ docker run -ti --rm --network=host public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.9 -get-user -type c524xl
+$ docker run -ti --rm --network=host public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.10 -get-user -type c524xl
 metahub-c524xl
 $ docker run -e AWS_REGION=eu-west-1 -ti --rm --network=host -v ${HOME}/.docker:/root/.docker \
-             -v /var/run/docker.sock:/var/run/docker.sock public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.9 -docker-login -type=c524xl
+             -v /var/run/docker.sock:/var/run/docker.sock public.ecr.aws/a4y4t9s0/metahub-autologin:v0.2.10 -docker-login -type=c524xl
 $ docker rmi mh.qnib.org/qnib/metahub-demo:2021-01-04.2
 $ docker pull -q mh.qnib.org/qnib/metahub-demo:2021-01-04.2
 mh.qnib.org/qnib/metahub-demo:2021-01-04.2
