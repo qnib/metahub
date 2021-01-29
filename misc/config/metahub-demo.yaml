@@ -1,4 +1,4 @@
-# Meant to be used with qnib/metahub-demo:2021-01-04.2
+# Meant to be used with qnib/metahub-demo:2021-01-06.2
 user: metahub
 # passwd: gromacs-sarus123
 password: "$2a$14$gb2QajF6cioofNOFzEVjguCVbxVbn1Pez/nJ69IVd98iHi3s/3Mc."

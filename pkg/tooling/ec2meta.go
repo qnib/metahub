@@ -2,12 +2,12 @@ package tooling
 
 import (
 	"fmt"
+	"os/exec"
 	"regexp"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws/ec2metadata"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/klauspost/cpuid"
 )
 
 // EC2Meta holds the infos for the instance
@@ -28,11 +28,34 @@ func GetMetaData() (md EC2Meta, err error) {
 	md.InstanceType = iTypeSlice[0]
 	r, _ := regexp.Compile("[0-9]*xl")
 	md.InstanceSize = r.FindString(iTypeSlice[1])
-	switch cpuid.CPU.ThreadsPerCore {
-	case 1:
+
+	switch getThreadsPerCore() {
+	case "1":
 		md.HyperThreading = "off"
-	case 2:
+	case "2":
 		md.HyperThreading = "on"
+	default:
+		md.HyperThreading = "na"
+	}
+	return
+}
+
+func getThreadsPerCore() (res string) {
+	out, _ := exec.Command("lscpu").Output()
+	outstring := strings.TrimSpace(string(out))
+	lines := strings.Split(outstring, "\n")
+	for _, line := range lines {
+		fields := strings.Split(line, ":")
+		if len(fields) < 2 {
+			continue
+		}
+		key := strings.TrimSpace(fields[0])
+		value := strings.TrimSpace(fields[1])
+
+		switch key {
+		case "Thread(s) per core":
+			res = value
+		}
 	}
 	return
 }
