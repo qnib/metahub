@@ -13,7 +13,7 @@ RUN go build -a -ldflags '-extldflags "-static"' .
 
 # Go binary serves the ui web content
 FROM alpine:3.12.3
-RUN apk add --no-cache --update docker
+RUN apk add --no-cache --update docker util-linux
 COPY --from=go /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=go /go/metahub/cmd/autologin/autologin /usr/bin/autologin
 ENTRYPOINT ["/usr/bin/autologin"]

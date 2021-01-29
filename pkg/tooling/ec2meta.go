@@ -28,8 +28,8 @@ func GetMetaData() (md EC2Meta, err error) {
 	md.InstanceType = iTypeSlice[0]
 	r, _ := regexp.Compile("[0-9]*xl")
 	md.InstanceSize = r.FindString(iTypeSlice[1])
-
-	switch getThreadsPerCore() {
+	tpc := getThreadsPerCore()
+	switch tpc {
 	case "1":
 		md.HyperThreading = "off"
 	case "2":
@@ -41,7 +41,12 @@ func GetMetaData() (md EC2Meta, err error) {
 }
 
 func getThreadsPerCore() (res string) {
-	out, _ := exec.Command("lscpu").Output()
+	cmd := exec.Command("lscpu")
+	cmd.Wait()
+	out, err := cmd.Output()
+	if err != nil {
+		panic(err)
+	}
 	outstring := strings.TrimSpace(string(out))
 	lines := strings.Split(outstring, "\n")
 	for _, line := range lines {
