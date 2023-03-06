@@ -1,4 +1,10 @@
-# MetaHub - Dynamic OCI Registry Proxy
+
+# This repository represents the initial version of MetaHub from 2019
+
+**Please check out the current version with much more features here**: [metahub-registry.org](https://metahub-registry.org/)
+
+
+### Old README version
 
 Announcement: [qnib.org](http://www.qnib.org/2019/06/12/metahub/)
 
@@ -11,7 +17,7 @@ Accelerators, network, configuration or the full depth of gcc options.
 
 ![](/misc/pics/metahub-proxy.png)
 
-## Example
+### Example
 
 A machine that logs in with the user `qnib-type1` will get a Broadwell image, `qnib-type2` serves a Skylake optimized image.
 
